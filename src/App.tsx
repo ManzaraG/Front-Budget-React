@@ -3,7 +3,7 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from '@/shared/lib/queryClient'
 import { AuthLayout, RequireAuth } from '@/shared/components/layout'
 import { Toaster } from '@/shared/components/ui'
-import { LoginPage, HomePage } from '@/pages'
+import { LoginPage, DashboardPage } from '@/pages'
 
 function App() {
     return (
@@ -15,7 +15,7 @@ function App() {
                     </Route>
 
                     <Route element={<RequireAuth />}>
-                        <Route path="/" element={<HomePage />} />
+                        <Route path="/" element={<DashboardPage />} />
                     </Route>
 
                     <Route path="*" element={<Navigate to="/login" replace />} />
