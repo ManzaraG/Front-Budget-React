@@ -1,4 +1,6 @@
-export type TypeTransaction = 0 | 1
+import type { TypeTransaction } from '@/shared/types'
+
+export type { TypeTransaction }
 
 export interface TransactionDto {
     id: string

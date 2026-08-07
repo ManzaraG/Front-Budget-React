@@ -3,7 +3,7 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from '@/shared/lib/queryClient'
 import { AuthLayout, RequireAuth } from '@/shared/components/layout'
 import { Toaster } from '@/shared/components/ui'
-import { LoginPage, RegisterPage, DashboardPage, AccountsPage, TransactionsPage } from '@/pages'
+import { LoginPage, RegisterPage, DashboardPage, AccountsPage, TransactionsPage, CategoriesPage } from '@/pages'
 
 function App() {
     return (
@@ -19,6 +19,7 @@ function App() {
                         <Route path="/" element={<DashboardPage />} />
                         <Route path="/accounts" element={<AccountsPage />} />
                         <Route path="/transactions" element={<TransactionsPage />} />
+                        <Route path="/categories" element={<CategoriesPage />} />
                     </Route>
 
                     <Route path="*" element={<Navigate to="/login" replace />} />

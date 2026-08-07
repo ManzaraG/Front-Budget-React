@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { cn } from '@/shared/lib/utils'
 import { useTransactionFormHook } from '../hooks/use-transaction-form.hook'
 import type { CompteDto } from '@/features/accounts'
-import type { CategorieDto } from '../types/categorie.type'
+import type { CategorieDto } from '@/features/categories'
 import type { TransactionDto } from '../types/transaction.type'
 
 interface TransactionFormDialogProps {

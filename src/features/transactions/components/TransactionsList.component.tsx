@@ -3,7 +3,7 @@ import { Button } from '@/shared/components/ui/button'
 import { Card, CardContent } from '@/shared/components/ui/card'
 import { cn } from '@/shared/lib/utils'
 import type { CompteDto } from '@/features/accounts'
-import type { CategorieDto } from '../types/categorie.type'
+import type { CategorieDto } from '@/features/categories'
 import type { TransactionDto } from '../types/transaction.type'
 
 interface TransactionsListProps {
