@@ -1,18 +1,29 @@
+import { AppSidebarComponent } from '@/shared/components/layout'
+import { useLogoutHook } from '@/shared/hooks'
 import { useDashboardHook } from '../hooks/use-dashboard.hook'
 import { BalanceChartCardComponent } from './BalanceChartCard.component'
 import { CategoryChartCardComponent } from './CategoryChartCard.component'
 import { DashboardHeaderComponent } from './DashboardHeader.component'
-import { DashboardSidebarComponent } from './DashboardSidebar.component'
 import { StatCardComponent } from './StatCard.component'
 import { TransactionsTableComponent } from './TransactionsTable.component'
 
 export const DashboardComponent = () => {
-    const { utilisateur, stats, balanceHistory, categories, totalDepenses, transactions, exchangeRate, handleLogout } =
+    const handleLogout = useLogoutHook()
+    const { utilisateur, stats, balanceHistory, categories, totalDepenses, transactions, exchangeRate } =
         useDashboardHook()
 
     return (
         <div className="flex min-h-screen bg-slate-50">
-            <DashboardSidebarComponent exchangeRate={exchangeRate} onLogout={handleLogout} />
+            <AppSidebarComponent onLogout={handleLogout}>
+                <div className="hidden rounded-xl bg-white/5 px-4 py-3 lg:block">
+                    <p className="text-xs text-white/50">Taux de change</p>
+                    <div className="mt-1 flex items-baseline justify-between">
+                        <span className="text-sm font-semibold">{exchangeRate.pair}</span>
+                        <span className="text-sm font-semibold">{exchangeRate.rate}</span>
+                    </div>
+                    <p className="text-xs text-emerald-400">{exchangeRate.changePercent}</p>
+                </div>
+            </AppSidebarComponent>
 
             <main className="min-w-0 flex-1 space-y-6 p-6">
                 <DashboardHeaderComponent utilisateur={utilisateur} />

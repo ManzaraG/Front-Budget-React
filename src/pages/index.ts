@@ -1,3 +1,4 @@
 export { LoginPage } from './auth/LoginPage'
 export { RegisterPage } from './auth/RegisterPage'
 export { DashboardPage } from './DashboardPage'
+export { AccountsPage } from './AccountsPage'

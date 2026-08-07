@@ -1,6 +1,5 @@
-import { useNavigate } from 'react-router-dom'
 import { Bus, Film, Home, ShoppingCart, TrendingDown, TrendingUp, Wallet } from 'lucide-react'
-import { clearAuthStorage, getUtilisateurConnecte } from '@/shared/storage'
+import { getUtilisateurConnecte } from '@/shared/storage'
 import type { BalancePoint, CategorySpend, ExchangeRate, RecentTransaction, StatCardData } from '../types/dashboard.type'
 
 // TODO: brancher sur l'API budget une fois les endpoints Comptes/Transactions disponibles
@@ -124,13 +123,7 @@ const MOCK_EXCHANGE_RATE: ExchangeRate = {
 }
 
 export const useDashboardHook = () => {
-    const navigate = useNavigate()
     const utilisateur = getUtilisateurConnecte()
-
-    const handleLogout = () => {
-        clearAuthStorage()
-        navigate('/login', { replace: true })
-    }
 
     return {
         utilisateur,
@@ -140,6 +133,5 @@ export const useDashboardHook = () => {
         totalDepenses: MOCK_CATEGORIES.reduce((sum, category) => sum + category.value, 0),
         transactions: MOCK_TRANSACTIONS,
         exchangeRate: MOCK_EXCHANGE_RATE,
-        handleLogout,
     }
 }
