@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { Eye, EyeOff, Loader2, Lock, Mail } from 'lucide-react'
 import { Button } from '@/shared/components/ui/button'
 import { Input } from '@/shared/components/ui/input'
@@ -96,6 +97,13 @@ export const LoginFormComponent = () => {
                         'Se connecter'
                     )}
                 </Button>
+
+                <p className="pt-2 text-center text-sm text-muted-foreground">
+                    Pas encore de compte ?{' '}
+                    <Link to="/register" className="font-medium text-blue-600 hover:underline">
+                        Créer un compte
+                    </Link>
+                </p>
             </form>
         </div>
     )
