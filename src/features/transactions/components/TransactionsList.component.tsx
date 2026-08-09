@@ -46,7 +46,7 @@ export const TransactionsListComponent = ({
         <Card>
             <CardContent className="divide-y p-0">
                 {transactions.map((transaction) => {
-                    const isRevenu = transaction.type === 1
+                    const isRevenu = transaction.type === 0
 
                     return (
                         <div key={transaction.id} className="flex items-center justify-between gap-4 px-6 py-4">

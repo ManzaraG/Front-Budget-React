@@ -3,9 +3,10 @@ import { transactionApi } from '../api/transaction.api'
 
 export const TRANSACTIONS_QUERY_KEY = ['transactions']
 
-export const useTransactionsQuery = () => {
+export const useTransactionsQuery = (compteId: string) => {
     return useQuery({
-        queryKey: TRANSACTIONS_QUERY_KEY,
-        queryFn: transactionApi.getAll,
+        queryKey: [...TRANSACTIONS_QUERY_KEY, compteId],
+        queryFn: () => transactionApi.getAll(compteId),
+        enabled: !!compteId,
     })
 }

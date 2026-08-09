@@ -5,7 +5,7 @@ import { Button } from '@/shared/components/ui/button'
 import { useLogoutHook } from '@/shared/hooks'
 import { useAccountsQuery } from '@/features/accounts'
 import { useCategoriesQuery } from '@/features/categories'
-import { useTransactionsQuery } from '../hooks/use-transactions-query.hook'
+import { useAllTransactionsQuery } from '../hooks/use-all-transactions-query.hook'
 import { useDeleteTransactionApi } from '../hooks/use-delete-transaction-api.hook'
 import { TransactionFormDialogComponent } from './TransactionFormDialog.component'
 import { TransactionsListComponent } from './TransactionsList.component'
@@ -13,8 +13,8 @@ import type { TransactionDto } from '../types/transaction.type'
 
 export const TransactionsComponent = () => {
     const handleLogout = useLogoutHook()
-    const { data: transactions, isLoading } = useTransactionsQuery()
     const { data: accounts } = useAccountsQuery()
+    const { data: transactions, isLoading } = useAllTransactionsQuery((accounts ?? []).map((account) => account.id))
     const { data: categories } = useCategoriesQuery()
     const apiDeleteTransaction = useDeleteTransactionApi()
 

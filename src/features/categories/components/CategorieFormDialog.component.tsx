@@ -34,10 +34,10 @@ export const CategorieFormDialogComponent = ({ open, onOpenChange, categorie }: 
                         <button
                             type="button"
                             disabled={!!categorie}
-                            onClick={() => categorieForm.setValue('type', 0)}
+                            onClick={() => categorieForm.setValue('type', 1)}
                             className={cn(
                                 'rounded-lg border px-3 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50',
-                                type === 0 ? 'border-red-600 bg-red-50 text-red-600' : 'text-muted-foreground'
+                                type === 1 ? 'border-red-600 bg-red-50 text-red-600' : 'text-muted-foreground'
                             )}
                         >
                             Dépense
@@ -45,10 +45,10 @@ export const CategorieFormDialogComponent = ({ open, onOpenChange, categorie }: 
                         <button
                             type="button"
                             disabled={!!categorie}
-                            onClick={() => categorieForm.setValue('type', 1)}
+                            onClick={() => categorieForm.setValue('type', 0)}
                             className={cn(
                                 'rounded-lg border px-3 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50',
-                                type === 1 ? 'border-emerald-600 bg-emerald-50 text-emerald-600' : 'text-muted-foreground'
+                                type === 0 ? 'border-emerald-600 bg-emerald-50 text-emerald-600' : 'text-muted-foreground'
                             )}
                         >
                             Revenu

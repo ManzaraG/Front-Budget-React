@@ -3,6 +3,7 @@ export { TransactionsComponent } from './components/Transactions.component'
 
 // Hooks
 export { useTransactionsQuery } from './hooks/use-transactions-query.hook'
+export { useAllTransactionsQuery } from './hooks/use-all-transactions-query.hook'
 export { useCreateTransactionApi } from './hooks/use-create-transaction-api.hook'
 export { useUpdateTransactionApi } from './hooks/use-update-transaction-api.hook'
 export { useDeleteTransactionApi } from './hooks/use-delete-transaction-api.hook'

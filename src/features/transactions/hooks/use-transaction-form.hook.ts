@@ -17,7 +17,7 @@ const toDateInputValue = (isoDate: string) => isoDate.slice(0, 10)
 
 const buildDefaultValues = (transaction: TransactionDto | null, defaultCompteId?: string): TransactionFormData => ({
     montant: transaction ? Math.abs(Number(transaction.montant)) : 0,
-    type: transaction?.type ?? 0,
+    type: transaction?.type ?? 1,
     compteId: transaction?.compteId ?? defaultCompteId ?? '',
     categorieId: transaction?.categorieId ?? '',
     description: transaction?.description ?? '',

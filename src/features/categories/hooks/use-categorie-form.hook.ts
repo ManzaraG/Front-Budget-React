@@ -18,12 +18,12 @@ export const useCategorieFormHook = ({ open, categorie, onSuccess }: UseCategori
 
     const categorieForm = useForm<CategorieFormData>({
         resolver: zodResolver(categorieSchema),
-        defaultValues: { nom: categorie?.nom ?? '', type: categorie?.type ?? 0 },
+        defaultValues: { nom: categorie?.nom ?? '', type: categorie?.type ?? 1 },
     })
 
     useEffect(() => {
         if (open) {
-            categorieForm.reset({ nom: categorie?.nom ?? '', type: categorie?.type ?? 0 })
+            categorieForm.reset({ nom: categorie?.nom ?? '', type: categorie?.type ?? 1 })
         }
     }, [open, categorie, categorieForm])
 
