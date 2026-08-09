@@ -1,5 +1,6 @@
 // Components
 export { TransactionsComponent } from './components/Transactions.component'
+export { TransactionFormDialogComponent } from './components/TransactionFormDialog.component'
 
 // Hooks
 export { useTransactionsQuery } from './hooks/use-transactions-query.hook'

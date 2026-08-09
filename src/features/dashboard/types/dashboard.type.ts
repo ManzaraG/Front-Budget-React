@@ -37,9 +37,3 @@ export interface RecentTransaction {
     iconColorClassName: string
     dotClassName: string
 }
-
-export interface ExchangeRate {
-    pair: string
-    rate: string
-    changePercent: string
-}

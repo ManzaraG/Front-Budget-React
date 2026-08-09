@@ -1,4 +1,5 @@
 import { MoreVertical } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card'
 import { cn } from '@/shared/lib/utils'
 import type { RecentTransaction } from '../types/dashboard.type'
@@ -8,13 +9,26 @@ interface TransactionsTableProps {
 }
 
 export const TransactionsTableComponent = ({ transactions }: TransactionsTableProps) => {
+    if (transactions.length === 0) {
+        return (
+            <Card>
+                <CardHeader>
+                    <CardTitle>Transactions récentes</CardTitle>
+                </CardHeader>
+                <CardContent className="py-8 text-center text-sm text-muted-foreground">
+                    Aucune transaction pour le moment
+                </CardContent>
+            </Card>
+        )
+    }
+
     return (
         <Card>
             <CardHeader className="flex items-center justify-between gap-2">
                 <CardTitle>Transactions récentes</CardTitle>
-                <a href="#" className="text-sm font-medium text-blue-600 hover:underline">
+                <Link to="/transactions" className="text-sm font-medium text-blue-600 hover:underline">
                     Voir toutes les transactions
-                </a>
+                </Link>
             </CardHeader>
             <CardContent className="overflow-x-auto px-0">
                 <table className="w-full min-w-[640px] border-collapse text-sm">

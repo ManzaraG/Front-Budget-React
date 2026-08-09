@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { AppSidebarComponent } from '@/shared/components/layout'
 import { useLogoutHook } from '@/shared/hooks'
+import { TransactionFormDialogComponent } from '@/features/transactions'
 import { useDashboardHook } from '../hooks/use-dashboard.hook'
 import { BalanceChartCardComponent } from './BalanceChartCard.component'
 import { CategoryChartCardComponent } from './CategoryChartCard.component'
@@ -9,24 +11,30 @@ import { TransactionsTableComponent } from './TransactionsTable.component'
 
 export const DashboardComponent = () => {
     const handleLogout = useLogoutHook()
-    const { utilisateur, stats, balanceHistory, categories, totalDepenses, transactions, exchangeRate } =
-        useDashboardHook()
+    const {
+        utilisateur,
+        hasAccounts,
+        accounts,
+        allCategories,
+        stats,
+        balanceHistory,
+        categories,
+        totalDepenses,
+        transactions,
+    } = useDashboardHook()
+
+    const [isAddTransactionOpen, setIsAddTransactionOpen] = useState(false)
 
     return (
         <div className="flex min-h-screen bg-slate-50">
-            <AppSidebarComponent onLogout={handleLogout}>
-                <div className="hidden rounded-xl bg-white/5 px-4 py-3 lg:block">
-                    <p className="text-xs text-white/50">Taux de change</p>
-                    <div className="mt-1 flex items-baseline justify-between">
-                        <span className="text-sm font-semibold">{exchangeRate.pair}</span>
-                        <span className="text-sm font-semibold">{exchangeRate.rate}</span>
-                    </div>
-                    <p className="text-xs text-emerald-400">{exchangeRate.changePercent}</p>
-                </div>
-            </AppSidebarComponent>
+            <AppSidebarComponent onLogout={handleLogout} />
 
             <main className="min-w-0 flex-1 space-y-6 p-6">
-                <DashboardHeaderComponent utilisateur={utilisateur} />
+                <DashboardHeaderComponent
+                    utilisateur={utilisateur}
+                    onAddTransaction={() => setIsAddTransactionOpen(true)}
+                    canAddTransaction={hasAccounts}
+                />
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     {stats.map((stat) => (
@@ -45,6 +53,14 @@ export const DashboardComponent = () => {
 
                 <TransactionsTableComponent transactions={transactions} />
             </main>
+
+            <TransactionFormDialogComponent
+                open={isAddTransactionOpen}
+                onOpenChange={setIsAddTransactionOpen}
+                transaction={null}
+                accounts={accounts}
+                categories={allCategories}
+            />
         </div>
     )
 }

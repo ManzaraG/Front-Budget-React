@@ -8,12 +8,17 @@ interface BalanceChartCardProps {
 
 const WIDTH = 560
 const HEIGHT = 180
-const MIN_VALUE = 6000
-const MAX_VALUE = 14000
-const GRID_LINES = [14000, 12000, 10000, 8000, 6000]
 
 export const BalanceChartCardComponent = ({ data }: BalanceChartCardProps) => {
-    const stepX = WIDTH / (data.length - 1)
+    const values = data.map((point) => point.value)
+    const rawMin = Math.min(...values, 0)
+    const rawMax = Math.max(...values, 0)
+    const padding = Math.max((rawMax - rawMin) * 0.15, 100)
+    const MIN_VALUE = Math.floor((rawMin - padding) / 100) * 100
+    const MAX_VALUE = Math.ceil((rawMax + padding) / 100) * 100
+    const GRID_LINES = Array.from({ length: 5 }, (_, index) => MIN_VALUE + ((MAX_VALUE - MIN_VALUE) * (4 - index)) / 4)
+
+    const stepX = WIDTH / Math.max(data.length - 1, 1)
     const points = data.map((point, index) => ({
         ...point,
         x: index * stepX,

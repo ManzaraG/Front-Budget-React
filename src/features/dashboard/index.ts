@@ -5,4 +5,4 @@ export { DashboardComponent } from './components/Dashboard.component'
 export { useDashboardHook } from './hooks/use-dashboard.hook'
 
 // Types
-export type { BalancePoint, CategorySpend, ExchangeRate, RecentTransaction, StatCardData } from './types/dashboard.type'
+export type { BalancePoint, CategorySpend, RecentTransaction, StatCardData } from './types/dashboard.type'
