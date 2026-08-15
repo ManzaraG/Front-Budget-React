@@ -1,6 +1,6 @@
-import { MoreVertical } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card'
+import { formatCurrency } from '@/shared/lib/currency'
 import { cn } from '@/shared/lib/utils'
 import type { RecentTransaction } from '../types/dashboard.type'
 
@@ -31,15 +31,14 @@ export const TransactionsTableComponent = ({ transactions }: TransactionsTablePr
                 </Link>
             </CardHeader>
             <CardContent className="overflow-x-auto px-0">
-                <table className="w-full min-w-[640px] border-collapse text-sm">
+                <table className="w-full min-w-160 border-collapse text-sm">
                     <thead>
                         <tr className="border-b text-left text-xs text-muted-foreground">
-                            <th className="px-6 py-2 font-medium">Date</th>
-                            <th className="px-6 py-2 font-medium">Description</th>
-                            <th className="px-6 py-2 font-medium">Catégorie</th>
-                            <th className="px-6 py-2 font-medium">Compte</th>
-                            <th className="px-6 py-2 text-right font-medium">Montant</th>
-                            <th className="w-10 px-6 py-2" />
+                            <th scope="col" className="px-6 py-2 font-medium">Date</th>
+                            <th scope="col" className="px-6 py-2 font-medium">Description</th>
+                            <th scope="col" className="px-6 py-2 font-medium">Catégorie</th>
+                            <th scope="col" className="px-6 py-2 font-medium">Compte</th>
+                            <th scope="col" className="px-6 py-2 text-right font-medium">Montant</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -77,15 +76,7 @@ export const TransactionsTableComponent = ({ transactions }: TransactionsTablePr
                                         )}
                                     >
                                         {isCredit ? '+ ' : '- '}
-                                        {Math.abs(transaction.montant).toLocaleString('fr-FR', {
-                                            style: 'currency',
-                                            currency: 'EUR',
-                                        })}
-                                    </td>
-                                    <td className="px-6 py-3 text-right">
-                                        <button type="button" className="text-muted-foreground hover:text-foreground">
-                                            <MoreVertical className="size-4" />
-                                        </button>
+                                        {formatCurrency(Math.abs(transaction.montant))}
                                     </td>
                                 </tr>
                             )

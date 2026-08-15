@@ -1,9 +1,9 @@
-import { TrendingDown, TrendingUp, Wallet } from 'lucide-react'
+import { TrendingDown, TrendingUp } from 'lucide-react'
 import { getUtilisateurConnecte } from '@/shared/storage'
 import { useAccountsQuery } from '@/features/accounts'
 import { useCategoriesQuery } from '@/features/categories'
 import { useAllTransactionsQuery, type TransactionDto } from '@/features/transactions'
-import type { BalancePoint, CategorySpend, RecentTransaction, StatCardData } from '../types/dashboard.type'
+import type { AccountShare, CategorySpend, MonthlyFlow, RecentTransaction } from '../types/dashboard.type'
 
 const CATEGORY_COLORS = [
     { colorClassName: 'text-blue-600', dotClassName: 'bg-blue-600' },
@@ -14,7 +14,14 @@ const CATEGORY_COLORS = [
     { colorClassName: 'text-slate-400', dotClassName: 'bg-slate-400' },
 ]
 
-const formatCurrency = (value: number) => value.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
+const ACCOUNT_COLORS = [
+    { iconBgClassName: 'bg-blue-50', iconColorClassName: 'text-blue-600', barClassName: 'bg-blue-600' },
+    { iconBgClassName: 'bg-violet-50', iconColorClassName: 'text-violet-500', barClassName: 'bg-violet-500' },
+    { iconBgClassName: 'bg-amber-50', iconColorClassName: 'text-amber-500', barClassName: 'bg-amber-400' },
+    { iconBgClassName: 'bg-rose-50', iconColorClassName: 'text-rose-500', barClassName: 'bg-rose-500' },
+    { iconBgClassName: 'bg-emerald-50', iconColorClassName: 'text-emerald-600', barClassName: 'bg-emerald-500' },
+    { iconBgClassName: 'bg-slate-100', iconColorClassName: 'text-slate-500', barClassName: 'bg-slate-400' },
+]
 
 const formatMonthLabel = (date: Date) => {
     const label = date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
@@ -28,67 +35,57 @@ const isSameMonth = (date: Date, reference: Date) =>
 const signedMontant = (transaction: TransactionDto) =>
     transaction.type === 0 ? Math.abs(Number(transaction.montant)) : -Math.abs(Number(transaction.montant))
 
-export const useDashboardHook = () => {
+export const useDashboardHook = (selectedMonth: Date) => {
     const utilisateur = getUtilisateurConnecte()
 
     const { data: accounts } = useAccountsQuery()
     const { data: categories } = useCategoriesQuery()
     const { data: transactions, isLoading } = useAllTransactionsQuery((accounts ?? []).map((account) => account.id))
 
-    const now = new Date()
-
-    const soldeTotal = transactions.reduce((sum, transaction) => sum + signedMontant(transaction), 0)
-
-    const transactionsCeMois = transactions.filter((transaction) => isSameMonth(new Date(transaction.date), now))
-    const revenusCeMois = transactionsCeMois
+    const transactionsDuMois = transactions.filter((transaction) => isSameMonth(new Date(transaction.date), selectedMonth))
+    const revenusCeMois = transactionsDuMois
         .filter((transaction) => transaction.type === 0)
         .reduce((sum, transaction) => sum + Math.abs(Number(transaction.montant)), 0)
-    const depensesCeMois = transactionsCeMois
+    const depensesCeMois = transactionsDuMois
         .filter((transaction) => transaction.type === 1)
         .reduce((sum, transaction) => sum + Math.abs(Number(transaction.montant)), 0)
 
-    const stats: StatCardData[] = [
-        {
-            id: 'solde',
-            label: 'Solde total',
-            value: formatCurrency(soldeTotal),
-            description: 'Tous comptes confondus',
-            icon: Wallet,
-            iconBgClassName: 'bg-blue-50',
-            iconColorClassName: 'text-blue-600',
-        },
-        {
-            id: 'revenus',
-            label: 'Revenus',
-            value: formatCurrency(revenusCeMois),
-            description: 'Ce mois-ci',
-            icon: TrendingUp,
-            iconBgClassName: 'bg-emerald-50',
-            iconColorClassName: 'text-emerald-600',
-            valueClassName: 'text-emerald-600',
-        },
-        {
-            id: 'depenses',
-            label: 'Dépenses',
-            value: formatCurrency(depensesCeMois),
-            description: 'Ce mois-ci',
-            icon: TrendingDown,
-            iconBgClassName: 'bg-red-50',
-            iconColorClassName: 'text-red-600',
-            valueClassName: 'text-red-600',
-        },
-    ]
+    // Revenu de chacun des comptes sur le mois sélectionné, exprimé en part du total des revenus.
+    const revenusParCompte = new Map<string, number>()
+    for (const transaction of transactionsDuMois) {
+        if (transaction.type !== 0) continue
+        revenusParCompte.set(
+            transaction.compteId,
+            (revenusParCompte.get(transaction.compteId) ?? 0) + Math.abs(Number(transaction.montant))
+        )
+    }
 
-    // Solde cumulé (toutes transactions confondues) à la fin de chacun des 6 derniers mois.
-    const balanceHistory: BalancePoint[] = Array.from({ length: 6 }, (_, index) => {
+    const accountShares: AccountShare[] = (accounts ?? []).map((account, index) => {
+        const montant = revenusParCompte.get(account.id) ?? 0
+        return {
+            id: account.id,
+            nom: account.nom,
+            montant,
+            percent: revenusCeMois > 0 ? (montant / revenusCeMois) * 100 : 0,
+            ...ACCOUNT_COLORS[index % ACCOUNT_COLORS.length],
+        }
+    })
+
+    // Revenus / dépenses de chacun des 6 mois se terminant au mois sélectionné (valeurs mensuelles, non cumulées).
+    const monthlyFlow: MonthlyFlow[] = Array.from({ length: 6 }, (_, index) => {
         const offset = 5 - index
-        const monthDate = new Date(now.getFullYear(), now.getMonth() - offset, 1)
-        const endOfMonth = new Date(now.getFullYear(), now.getMonth() - offset + 1, 1)
-        const balance = transactions
-            .filter((transaction) => new Date(transaction.date) < endOfMonth)
-            .reduce((sum, transaction) => sum + signedMontant(transaction), 0)
+        const monthDate = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - offset, 1)
+        const monthTransactions = transactions.filter((transaction) => isSameMonth(new Date(transaction.date), monthDate))
 
-        return { label: formatMonthLabel(monthDate), value: balance }
+        return {
+            label: formatMonthLabel(monthDate),
+            revenus: monthTransactions
+                .filter((transaction) => transaction.type === 0)
+                .reduce((sum, transaction) => sum + Math.abs(Number(transaction.montant)), 0),
+            depenses: monthTransactions
+                .filter((transaction) => transaction.type === 1)
+                .reduce((sum, transaction) => sum + Math.abs(Number(transaction.montant)), 0),
+        }
     })
 
     const categorieNom = (categorieId: string | null) => {
@@ -97,7 +94,7 @@ export const useDashboardHook = () => {
     }
 
     const depensesParCategorie = new Map<string, number>()
-    for (const transaction of transactionsCeMois) {
+    for (const transaction of transactionsDuMois) {
         if (transaction.type !== 1) continue
         const key = transaction.categorieId ?? 'sans-categorie'
         depensesParCategorie.set(key, (depensesParCategorie.get(key) ?? 0) + Math.abs(Number(transaction.montant)))
@@ -115,7 +112,7 @@ export const useDashboardHook = () => {
 
     const compteNom = (compteId: string) => (accounts ?? []).find((account) => account.id === compteId)?.nom ?? 'Compte'
 
-    const recentTransactions: RecentTransaction[] = [...transactions]
+    const recentTransactions: RecentTransaction[] = [...transactionsDuMois]
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
         .slice(0, 5)
         .map((transaction) => {
@@ -145,10 +142,11 @@ export const useDashboardHook = () => {
         hasAccounts: (accounts ?? []).length > 0,
         accounts: accounts ?? [],
         allCategories: categories ?? [],
+        accountShares,
+        monthlyFlow,
         categories: categoriesSpend,
-        totalDepenses: depensesCeMois,
-        stats,
-        balanceHistory,
+        revenusCeMois,
+        depensesCeMois,
         transactions: recentTransactions,
     }
 }

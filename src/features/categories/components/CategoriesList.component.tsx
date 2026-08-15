@@ -28,48 +28,73 @@ export const CategoriesListComponent = ({ categories, isLoading, onEdit, onDelet
     }
 
     return (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {categories.map((categorie) => {
-                const isRevenu = categorie.type === 0
+        <Card>
+            <CardContent className="overflow-x-auto px-0">
+                <table className="w-full min-w-120 border-collapse text-sm">
+                    <thead>
+                        <tr className="border-b text-left text-xs text-muted-foreground">
+                            <th scope="col" className="px-6 py-2 font-medium">Nom</th>
+                            <th scope="col" className="px-6 py-2 font-medium">Type</th>
+                            <th scope="col" className="w-24 px-6 py-2" />
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {categories.map((categorie) => {
+                            const isRevenu = categorie.type === 0
 
-                return (
-                    <Card key={categorie.id}>
-                        <CardContent className="flex items-start justify-between gap-3">
-                            <div className="flex items-center gap-3">
-                                <span
-                                    className={cn(
-                                        'flex size-10 shrink-0 items-center justify-center rounded-lg',
-                                        isRevenu ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'
-                                    )}
-                                >
-                                    <Tags className="size-5" />
-                                </span>
-                                <div>
-                                    <p className="font-semibold">{categorie.nom}</p>
-                                    <p className={cn('text-xs', isRevenu ? 'text-emerald-600' : 'text-red-600')}>
-                                        {isRevenu ? 'Revenu' : 'Dépense'}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-1">
-                                <Button variant="ghost" size="icon" onClick={() => onEdit(categorie)} title="Modifier">
-                                    <Pencil className="size-4" />
-                                </Button>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => onDelete(categorie)}
-                                    title="Supprimer"
-                                    className="text-destructive hover:text-destructive"
-                                >
-                                    <Trash2 className="size-4" />
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                )
-            })}
-        </div>
+                            return (
+                                <tr key={categorie.id} className="border-b last:border-0 hover:bg-blue-50/40">
+                                    <td className="px-6 py-3">
+                                        <div className="flex items-center gap-2.5">
+                                            <span
+                                                className={cn(
+                                                    'flex size-8 shrink-0 items-center justify-center rounded-lg',
+                                                    isRevenu ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'
+                                                )}
+                                            >
+                                                <Tags className="size-4" />
+                                            </span>
+                                            <span className="font-medium">{categorie.nom}</span>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-3 text-muted-foreground">
+                                        <span className="inline-flex items-center gap-1.5">
+                                            <span
+                                                className={cn(
+                                                    'size-1.5 rounded-full',
+                                                    isRevenu ? 'bg-emerald-600' : 'bg-red-600'
+                                                )}
+                                            />
+                                            {isRevenu ? 'Revenu' : 'Dépense'}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-3 text-right">
+                                        <div className="flex items-center justify-end gap-1">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => onEdit(categorie)}
+                                                title="Modifier"
+                                            >
+                                                <Pencil className="size-4" />
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => onDelete(categorie)}
+                                                title="Supprimer"
+                                                className="text-destructive hover:text-destructive"
+                                            >
+                                                <Trash2 className="size-4" />
+                                            </Button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )
+                        })}
+                    </tbody>
+                </table>
+            </CardContent>
+        </Card>
     )
 }

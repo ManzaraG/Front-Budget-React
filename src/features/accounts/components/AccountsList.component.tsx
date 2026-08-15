@@ -27,39 +27,51 @@ export const AccountsListComponent = ({ accounts, isLoading, onEdit, onDelete }:
     }
 
     return (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {accounts.map((account) => (
-                <Card key={account.id}>
-                    <CardContent className="flex items-start justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                            <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
-                                <Wallet className="size-5" />
-                            </span>
-                            <div>
-                                <p className="font-semibold">{account.nom}</p>
-                                <p className="text-xs text-muted-foreground">
-                                    Créé le {new Date(account.dateCreation).toLocaleDateString('fr-FR')}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-1">
-                            <Button variant="ghost" size="icon" onClick={() => onEdit(account)} title="Modifier">
-                                <Pencil className="size-4" />
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => onDelete(account)}
-                                title="Supprimer"
-                                className="text-destructive hover:text-destructive"
-                            >
-                                <Trash2 className="size-4" />
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-            ))}
-        </div>
+        <Card>
+            <CardContent className="overflow-x-auto px-0">
+                <table className="w-full min-w-120 border-collapse text-sm">
+                    <thead>
+                        <tr className="border-b text-left text-xs text-muted-foreground">
+                            <th scope="col" className="px-6 py-2 font-medium">Nom</th>
+                            <th scope="col" className="px-6 py-2 font-medium">Créé le</th>
+                            <th scope="col" className="w-24 px-6 py-2" />
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {accounts.map((account) => (
+                            <tr key={account.id} className="border-b last:border-0 hover:bg-blue-50/40">
+                                <td className="px-6 py-3">
+                                    <div className="flex items-center gap-2.5">
+                                        <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                                            <Wallet className="size-4" />
+                                        </span>
+                                        <span className="font-medium">{account.nom}</span>
+                                    </div>
+                                </td>
+                                <td className="px-6 py-3 text-muted-foreground">
+                                    {new Date(account.dateCreation).toLocaleDateString('fr-FR')}
+                                </td>
+                                <td className="px-6 py-3 text-right">
+                                    <div className="flex items-center justify-end gap-1">
+                                        <Button variant="ghost" size="icon" onClick={() => onEdit(account)} title="Modifier">
+                                            <Pencil className="size-4" />
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => onDelete(account)}
+                                            title="Supprimer"
+                                            className="text-destructive hover:text-destructive"
+                                        >
+                                            <Trash2 className="size-4" />
+                                        </Button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </CardContent>
+        </Card>
     )
 }

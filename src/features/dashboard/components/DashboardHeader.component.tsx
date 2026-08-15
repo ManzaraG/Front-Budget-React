@@ -1,24 +1,82 @@
-import { Bell, Plus } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { Button } from '@/shared/components/ui/button'
-import type { UtilisateurDto } from '@/shared/types'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 
 interface DashboardHeaderProps {
-    utilisateur: UtilisateurDto | null
+    selectedMonth: Date
+    onSelectedMonthChange: (date: Date) => void
     onAddTransaction: () => void
     canAddTransaction: boolean
 }
 
-const currentMonthLabel = () => {
-    const label = new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
-    return label.charAt(0).toUpperCase() + label.slice(1)
+const MONTH_LABELS = [
+    'Janvier',
+    'Février',
+    'Mars',
+    'Avril',
+    'Mai',
+    'Juin',
+    'Juillet',
+    'Août',
+    'Septembre',
+    'Octobre',
+    'Novembre',
+    'Décembre',
+]
+
+const YEAR_RANGE = 5
+
+const buildYearOptions = () => {
+    const currentYear = new Date().getFullYear()
+    return Array.from({ length: YEAR_RANGE + 1 }, (_, index) => currentYear - YEAR_RANGE + index)
 }
 
-export const DashboardHeaderComponent = ({ utilisateur, onAddTransaction, canAddTransaction }: DashboardHeaderProps) => {
+export const DashboardHeaderComponent = ({
+    selectedMonth,
+    onSelectedMonthChange,
+    onAddTransaction,
+    canAddTransaction,
+}: DashboardHeaderProps) => {
+    const yearOptions = buildYearOptions()
+
     return (
         <header className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-                <h1 className="text-2xl font-bold">Bonjour{utilisateur ? `, ${utilisateur.prenom}` : ''}</h1>
-                <p className="mt-1 text-sm text-muted-foreground">{currentMonthLabel()}</p>
+            <div className="flex items-center gap-2">
+                <Select
+                    value={String(selectedMonth.getMonth())}
+                    onValueChange={(value) =>
+                        onSelectedMonthChange(new Date(selectedMonth.getFullYear(), Number(value), 1))
+                    }
+                >
+                    <SelectTrigger className="w-36 text-base font-semibold">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {MONTH_LABELS.map((label, index) => (
+                            <SelectItem key={label} value={String(index)}>
+                                {label}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+
+                <Select
+                    value={String(selectedMonth.getFullYear())}
+                    onValueChange={(value) =>
+                        onSelectedMonthChange(new Date(Number(value), selectedMonth.getMonth(), 1))
+                    }
+                >
+                    <SelectTrigger className="w-24 text-base font-semibold">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {yearOptions.map((year) => (
+                            <SelectItem key={year} value={String(year)}>
+                                {year}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
             </div>
 
             <div className="flex items-center gap-3">
@@ -32,13 +90,6 @@ export const DashboardHeaderComponent = ({ utilisateur, onAddTransaction, canAdd
                     <span className="hidden sm:inline">Ajouter une transaction</span>
                     <span className="sm:hidden">Ajouter</span>
                 </Button>
-                <button
-                    type="button"
-                    className="relative flex size-10 shrink-0 items-center justify-center rounded-full border text-muted-foreground hover:bg-blue-50 hover:text-blue-600"
-                >
-                    <Bell className="size-5" />
-                    <span className="absolute top-2 right-2 size-1.5 rounded-full bg-red-500" />
-                </button>
             </div>
         </header>
     )

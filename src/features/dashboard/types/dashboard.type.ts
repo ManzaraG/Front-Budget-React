@@ -1,19 +1,19 @@
 import type { LucideIcon } from 'lucide-react'
 
-export interface StatCardData {
-    id: string
+export interface MonthlyFlow {
     label: string
-    value: string
-    description: string
-    icon: LucideIcon
-    iconBgClassName: string
-    iconColorClassName: string
-    valueClassName?: string
+    revenus: number
+    depenses: number
 }
 
-export interface BalancePoint {
-    label: string
-    value: number
+export interface AccountShare {
+    id: string
+    nom: string
+    montant: number
+    percent: number
+    iconBgClassName: string
+    iconColorClassName: string
+    barClassName: string
 }
 
 export interface CategorySpend {
