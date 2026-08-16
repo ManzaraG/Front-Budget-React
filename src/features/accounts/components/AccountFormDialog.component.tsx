@@ -3,21 +3,25 @@ import { Button } from '@/shared/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog'
 import { Input } from '@/shared/components/ui/input'
 import { Label } from '@/shared/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
 import { useAccountFormHook } from '../hooks/use-account-form.hook'
-import type { CompteDto } from '../types/account.type'
+import type { AccountTypeDto, CompteDto } from '../types/account.type'
 
 interface AccountFormDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     account: CompteDto | null
+    accountTypes: AccountTypeDto[]
 }
 
-export const AccountFormDialogComponent = ({ open, onOpenChange, account }: AccountFormDialogProps) => {
+export const AccountFormDialogComponent = ({ open, onOpenChange, account, accountTypes }: AccountFormDialogProps) => {
     const { accountForm, errorsAccountForm, onSubmitAccountForm, isPending } = useAccountFormHook({
         open,
         account,
         onSuccess: () => onOpenChange(false),
     })
+
+    const typeId = accountForm.watch('typeId')
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -31,6 +35,25 @@ export const AccountFormDialogComponent = ({ open, onOpenChange, account }: Acco
                         <Label htmlFor="nom">Nom du compte</Label>
                         <Input id="nom" placeholder="Compte courant" autoComplete="off" {...accountForm.register('nom')} />
                         {errorsAccountForm.nom && <p className="text-xs text-destructive">{errorsAccountForm.nom.message}</p>}
+                    </div>
+
+                    <div className="space-y-1">
+                        <Label>Type</Label>
+                        <Select value={typeId} onValueChange={(value) => accountForm.setValue('typeId', value)}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Sélectionner un type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {accountTypes.map((accountType) => (
+                                    <SelectItem key={accountType.id} value={accountType.id}>
+                                        {accountType.nom}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {errorsAccountForm.typeId && (
+                            <p className="text-xs text-destructive">{errorsAccountForm.typeId.message}</p>
+                        )}
                     </div>
 
                     <DialogFooter>

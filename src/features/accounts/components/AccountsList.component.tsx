@@ -1,77 +1,122 @@
 import { Pencil, Trash2, Wallet } from 'lucide-react'
+import type { ColumnDef } from '@tanstack/react-table'
 import { Button } from '@/shared/components/ui/button'
 import { Card, CardContent } from '@/shared/components/ui/card'
-import type { CompteDto } from '../types/account.type'
+import { DataTable } from '@/shared/components/ui/data-table'
+import { cn } from '@/shared/lib/utils'
+import type { AccountTypeDto, CompteDto } from '../types/account.type'
 
 interface AccountsListProps {
     accounts: CompteDto[]
+    accountTypes: AccountTypeDto[]
     isLoading: boolean
     onEdit: (account: CompteDto) => void
     onDelete: (account: CompteDto) => void
+    onDeleteSelected?: (accounts: CompteDto[]) => void
 }
 
-export const AccountsListComponent = ({ accounts, isLoading, onEdit, onDelete }: AccountsListProps) => {
-    if (isLoading) {
-        return <p className="text-sm text-muted-foreground">Chargement des comptes...</p>
-    }
+export const AccountsListComponent = ({
+    accounts,
+    accountTypes,
+    isLoading,
+    onEdit,
+    onDelete,
+    onDeleteSelected,
+}: AccountsListProps) => {
+    const getTypeNom = (typeId: string) => accountTypes.find((accountType) => accountType.id === typeId)?.nom ?? '—'
 
-    if (accounts.length === 0) {
-        return (
-            <Card>
-                <CardContent className="flex flex-col items-center gap-2 py-12 text-center text-muted-foreground">
-                    <Wallet className="size-8" />
-                    <p>Aucun compte pour le moment</p>
-                </CardContent>
-            </Card>
-        )
-    }
+    const columns: ColumnDef<CompteDto>[] = [
+        {
+            id: 'nom',
+            header: 'Nom',
+            meta: { className: 'w-auto' },
+            cell: ({ row }) => (
+                <div className="flex min-w-0 items-center gap-2.5">
+                    <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                        <Wallet className="size-4" />
+                    </span>
+                    <span className="truncate font-medium">{row.original.nom}</span>
+                </div>
+            ),
+        },
+        {
+            id: 'type',
+            header: 'Type',
+            meta: { className: 'w-40' },
+            cell: ({ row }) => (
+                <span className="text-muted-foreground inline-flex items-center rounded-md border border-border bg-muted/40 px-2 py-0.5 text-[11px] font-medium tracking-wide uppercase">
+                    {getTypeNom(row.original.typeId)}
+                </span>
+            ),
+        },
+        {
+            id: 'statut',
+            header: 'Statut',
+            meta: { className: 'w-32' },
+            cell: ({ row }) => (
+                <span
+                    className={cn(
+                        'inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium tracking-wide uppercase',
+                        row.original.estActif
+                            ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                            : 'border-slate-200 bg-slate-100 text-slate-600'
+                    )}
+                >
+                    {row.original.estActif ? 'Actif' : 'Inactif'}
+                </span>
+            ),
+        },
+        {
+            id: 'dateCreation',
+            header: 'Créé le',
+            meta: { className: 'w-32' },
+            cell: ({ row }) => (
+                <span className="text-muted-foreground">
+                    {new Date(row.original.dateCreation).toLocaleDateString('fr-FR')}
+                </span>
+            ),
+        },
+        {
+            id: 'actions',
+            header: '',
+            meta: { className: 'w-24 text-right' },
+            cell: ({ row }) => (
+                <div className="flex items-center justify-end gap-1">
+                    <Button variant="ghost" size="icon" onClick={() => onEdit(row.original)} title="Modifier">
+                        <Pencil className="size-4" />
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onDelete(row.original)}
+                        title="Supprimer"
+                        className="text-destructive hover:text-destructive"
+                    >
+                        <Trash2 className="size-4" />
+                    </Button>
+                </div>
+            ),
+        },
+    ]
 
     return (
-        <Card>
-            <CardContent className="overflow-x-auto px-0">
-                <table className="w-full min-w-120 border-collapse text-sm">
-                    <thead>
-                        <tr className="border-b text-left text-xs text-muted-foreground">
-                            <th scope="col" className="px-6 py-2 font-medium">Nom</th>
-                            <th scope="col" className="px-6 py-2 font-medium">Créé le</th>
-                            <th scope="col" className="w-24 px-6 py-2" />
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {accounts.map((account) => (
-                            <tr key={account.id} className="border-b last:border-0 hover:bg-blue-50/40">
-                                <td className="px-6 py-3">
-                                    <div className="flex items-center gap-2.5">
-                                        <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
-                                            <Wallet className="size-4" />
-                                        </span>
-                                        <span className="font-medium">{account.nom}</span>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-3 text-muted-foreground">
-                                    {new Date(account.dateCreation).toLocaleDateString('fr-FR')}
-                                </td>
-                                <td className="px-6 py-3 text-right">
-                                    <div className="flex items-center justify-end gap-1">
-                                        <Button variant="ghost" size="icon" onClick={() => onEdit(account)} title="Modifier">
-                                            <Pencil className="size-4" />
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => onDelete(account)}
-                                            title="Supprimer"
-                                            className="text-destructive hover:text-destructive"
-                                        >
-                                            <Trash2 className="size-4" />
-                                        </Button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </CardContent>
-        </Card>
+        <DataTable
+            columns={columns}
+            data={accounts}
+            isLoading={isLoading}
+            loadingText="Chargement des comptes..."
+            getRowId={(account) => account.id}
+            enableRowSelection
+            onDeleteSelected={onDeleteSelected}
+            pageSize={10}
+            emptyState={
+                <Card>
+                    <CardContent className="flex flex-col items-center gap-2 py-12 text-center text-muted-foreground">
+                        <Wallet className="size-8" />
+                        <p>Aucun compte pour le moment</p>
+                    </CardContent>
+                </Card>
+            }
+        />
     )
 }

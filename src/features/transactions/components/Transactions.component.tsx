@@ -37,6 +37,12 @@ export const TransactionsComponent = () => {
         }
     }
 
+    const handleDeleteSelected = (selectedTransactions: TransactionDto[]) => {
+        if (window.confirm(`Supprimer ${selectedTransactions.length} transaction(s) ?`)) {
+            selectedTransactions.forEach((transaction) => apiDeleteTransaction.mutate(transaction.id))
+        }
+    }
+
     return (
         <div className="flex min-h-screen bg-slate-50">
             <AppSidebarComponent onLogout={handleLogout} />
@@ -65,6 +71,7 @@ export const TransactionsComponent = () => {
                     isLoading={isLoading}
                     onEdit={openEditDialog}
                     onDelete={handleDelete}
+                    onDeleteSelected={handleDeleteSelected}
                 />
             </main>
 

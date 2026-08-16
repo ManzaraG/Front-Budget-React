@@ -33,6 +33,12 @@ export const CategoriesComponent = () => {
         }
     }
 
+    const handleDeleteSelected = (selectedCategories: CategorieDto[]) => {
+        if (window.confirm(`Supprimer ${selectedCategories.length} catégorie(s) ?`)) {
+            selectedCategories.forEach((categorie) => apiDeleteCategorie.mutate(categorie.id))
+        }
+    }
+
     return (
         <div className="flex min-h-screen bg-slate-50">
             <AppSidebarComponent onLogout={handleLogout} />
@@ -56,6 +62,7 @@ export const CategoriesComponent = () => {
                     isLoading={isLoading}
                     onEdit={openEditDialog}
                     onDelete={handleDelete}
+                    onDeleteSelected={handleDeleteSelected}
                 />
             </main>
 

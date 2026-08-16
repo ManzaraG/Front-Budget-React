@@ -1,1 +1,1 @@
-export type TypeTransaction = 0 | 1
+export type TypeTransaction = 'Revenu' | 'Depense'

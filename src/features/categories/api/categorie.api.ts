@@ -1,10 +1,13 @@
 import { apiClient } from '@/shared/lib/axios'
+import type { PagedResult } from '@/shared/types'
 import type { CategorieDto, CreateCategoriePayload, UpdateCategoriePayload } from '../types/categorie.type'
 
 export const categorieApi = {
     getAll: async (): Promise<CategorieDto[]> => {
-        const { data } = await apiClient.get<CategorieDto[]>('/api/categories')
-        return data
+        const { data } = await apiClient.get<PagedResult<CategorieDto>>('/api/categories', {
+            params: { page: 1, pageSize: 100 },
+        })
+        return data.items
     },
     create: async (dto: CreateCategoriePayload): Promise<CategorieDto> => {
         const { data } = await apiClient.post<CategorieDto>('/api/categories', dto)

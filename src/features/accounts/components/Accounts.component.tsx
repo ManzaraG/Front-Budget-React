@@ -4,6 +4,7 @@ import { AppSidebarComponent } from '@/shared/components/layout'
 import { Button } from '@/shared/components/ui/button'
 import { useLogoutHook } from '@/shared/hooks'
 import { useAccountsQuery } from '../hooks/use-accounts-query.hook'
+import { useAccountTypesQuery } from '../hooks/use-account-types-query.hook'
 import { useDeleteAccountApi } from '../hooks/use-delete-account-api.hook'
 import { AccountFormDialogComponent } from './AccountFormDialog.component'
 import { AccountsListComponent } from './AccountsList.component'
@@ -12,6 +13,7 @@ import type { CompteDto } from '../types/account.type'
 export const AccountsComponent = () => {
     const handleLogout = useLogoutHook()
     const { data: accounts, isLoading } = useAccountsQuery()
+    const { data: accountTypes } = useAccountTypesQuery()
     const apiDeleteAccount = useDeleteAccountApi()
 
     const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -33,6 +35,12 @@ export const AccountsComponent = () => {
         }
     }
 
+    const handleDeleteSelected = (selectedAccounts: CompteDto[]) => {
+        if (window.confirm(`Supprimer ${selectedAccounts.length} compte(s) ?`)) {
+            selectedAccounts.forEach((account) => apiDeleteAccount.mutate(account.id))
+        }
+    }
+
     return (
         <div className="flex min-h-screen bg-slate-50">
             <AppSidebarComponent onLogout={handleLogout} />
@@ -51,13 +59,20 @@ export const AccountsComponent = () => {
 
                 <AccountsListComponent
                     accounts={accounts ?? []}
+                    accountTypes={accountTypes ?? []}
                     isLoading={isLoading}
                     onEdit={openEditDialog}
                     onDelete={handleDelete}
+                    onDeleteSelected={handleDeleteSelected}
                 />
             </main>
 
-            <AccountFormDialogComponent open={isDialogOpen} onOpenChange={setIsDialogOpen} account={editingAccount} />
+            <AccountFormDialogComponent
+                open={isDialogOpen}
+                onOpenChange={setIsDialogOpen}
+                account={editingAccount}
+                accountTypes={accountTypes ?? []}
+            />
         </div>
     )
 }

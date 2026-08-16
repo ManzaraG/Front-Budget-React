@@ -31,9 +31,9 @@ const formatMonthLabel = (date: Date) => {
 const isSameMonth = (date: Date, reference: Date) =>
     date.getFullYear() === reference.getFullYear() && date.getMonth() === reference.getMonth()
 
-// L'API stocke toujours un montant positif ; le signe est dérivé du type (0 = Revenu, 1 = Dépense).
+// L'API stocke toujours un montant positif ; le signe est dérivé du type ('Revenu' ou 'Depense').
 const signedMontant = (transaction: TransactionDto) =>
-    transaction.type === 0 ? Math.abs(Number(transaction.montant)) : -Math.abs(Number(transaction.montant))
+    transaction.type === 'Revenu' ? Math.abs(Number(transaction.montant)) : -Math.abs(Number(transaction.montant))
 
 export const useDashboardHook = (selectedMonth: Date) => {
     const utilisateur = getUtilisateurConnecte()
@@ -44,16 +44,16 @@ export const useDashboardHook = (selectedMonth: Date) => {
 
     const transactionsDuMois = transactions.filter((transaction) => isSameMonth(new Date(transaction.date), selectedMonth))
     const revenusCeMois = transactionsDuMois
-        .filter((transaction) => transaction.type === 0)
+        .filter((transaction) => transaction.type === 'Revenu')
         .reduce((sum, transaction) => sum + Math.abs(Number(transaction.montant)), 0)
     const depensesCeMois = transactionsDuMois
-        .filter((transaction) => transaction.type === 1)
+        .filter((transaction) => transaction.type === 'Depense')
         .reduce((sum, transaction) => sum + Math.abs(Number(transaction.montant)), 0)
 
     // Revenu de chacun des comptes sur le mois sélectionné, exprimé en part du total des revenus.
     const revenusParCompte = new Map<string, number>()
     for (const transaction of transactionsDuMois) {
-        if (transaction.type !== 0) continue
+        if (transaction.type !== 'Revenu') continue
         revenusParCompte.set(
             transaction.compteId,
             (revenusParCompte.get(transaction.compteId) ?? 0) + Math.abs(Number(transaction.montant))
@@ -80,10 +80,10 @@ export const useDashboardHook = (selectedMonth: Date) => {
         return {
             label: formatMonthLabel(monthDate),
             revenus: monthTransactions
-                .filter((transaction) => transaction.type === 0)
+                .filter((transaction) => transaction.type === 'Revenu')
                 .reduce((sum, transaction) => sum + Math.abs(Number(transaction.montant)), 0),
             depenses: monthTransactions
-                .filter((transaction) => transaction.type === 1)
+                .filter((transaction) => transaction.type === 'Depense')
                 .reduce((sum, transaction) => sum + Math.abs(Number(transaction.montant)), 0),
         }
     })
@@ -95,7 +95,7 @@ export const useDashboardHook = (selectedMonth: Date) => {
 
     const depensesParCategorie = new Map<string, number>()
     for (const transaction of transactionsDuMois) {
-        if (transaction.type !== 1) continue
+        if (transaction.type !== 'Depense') continue
         const key = transaction.categorieId ?? 'sans-categorie'
         depensesParCategorie.set(key, (depensesParCategorie.get(key) ?? 0) + Math.abs(Number(transaction.montant)))
     }
@@ -116,7 +116,7 @@ export const useDashboardHook = (selectedMonth: Date) => {
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
         .slice(0, 5)
         .map((transaction) => {
-            const isRevenu = transaction.type === 0
+            const isRevenu = transaction.type === 'Revenu'
 
             return {
                 id: transaction.id,
