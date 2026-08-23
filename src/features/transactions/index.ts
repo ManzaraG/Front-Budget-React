@@ -11,7 +11,16 @@ export { useDeleteTransactionApi } from './hooks/use-delete-transaction-api.hook
 export { useTransactionFormHook } from './hooks/use-transaction-form.hook'
 
 // Schemas
-export { transactionSchema, type TransactionFormData } from './schemas/transaction.schema'
+export { transactionSchema, repartitionSchema, type TransactionFormData, type RepartitionFormData } from './schemas/transaction.schema'
+
+// Lib
+export { getComptesNoms } from './lib/get-comptes-noms'
 
 // Types
-export type { TransactionDto, CreateTransactionPayload, UpdateTransactionPayload, TypeTransaction } from './types/transaction.type'
+export type {
+    TransactionDto,
+    RepartitionDto,
+    CreateTransactionPayload,
+    UpdateTransactionPayload,
+    TypeTransaction,
+} from './types/transaction.type'

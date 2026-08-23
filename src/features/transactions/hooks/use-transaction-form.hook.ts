@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { transactionSchema, type TransactionFormData } from '../schemas/transaction.schema'
 import { useCreateTransactionApi } from './use-create-transaction-api.hook'
@@ -16,9 +16,14 @@ interface UseTransactionFormHookParams {
 const toDateInputValue = (isoDate: string) => isoDate.slice(0, 10)
 
 const buildDefaultValues = (transaction: TransactionDto | null, defaultCompteId?: string): TransactionFormData => ({
-    montant: transaction ? Math.abs(Number(transaction.montant)) : 0,
     type: transaction?.type ?? 'Depense',
-    compteId: transaction?.compteId ?? defaultCompteId ?? '',
+    repartitions:
+        transaction && transaction.repartitions.length > 0
+            ? transaction.repartitions.map((repartition) => ({
+                  compteId: repartition.compteId,
+                  montant: Math.abs(Number(repartition.montant)),
+              }))
+            : [{ compteId: defaultCompteId ?? '', montant: 0 }],
     categorieId: transaction?.categorieId ?? '',
     description: transaction?.description ?? '',
     date: transaction ? toDateInputValue(transaction.date) : toDateInputValue(new Date().toISOString()),
@@ -33,6 +38,8 @@ export const useTransactionFormHook = ({ open, transaction, defaultCompteId, onS
         defaultValues: buildDefaultValues(transaction, defaultCompteId),
     })
 
+    const repartitionsFieldArray = useFieldArray({ control: transactionForm.control, name: 'repartitions' })
+
     useEffect(() => {
         if (open) {
             transactionForm.reset(buildDefaultValues(transaction, defaultCompteId))
@@ -43,22 +50,24 @@ export const useTransactionFormHook = ({ open, transaction, defaultCompteId, onS
         const isoDate = new Date(data.date).toISOString()
         const categorieId = data.categorieId || null
         const description = data.description || null
+        const repartitions = data.repartitions.map((repartition) => ({
+            compteId: repartition.compteId,
+            montant: repartition.montant,
+        }))
 
         if (transaction) {
             apiUpdateTransaction.mutate(
-                { id: transaction.id, dto: { montant: data.montant, description, categorieId, date: isoDate } },
+                { id: transaction.id, dto: { repartitions, categorieId, description, date: isoDate } },
                 { onSuccess }
             )
         } else {
-            apiCreateTransaction.mutate(
-                { montant: data.montant, type: data.type, compteId: data.compteId, categorieId, description, date: isoDate },
-                { onSuccess }
-            )
+            apiCreateTransaction.mutate({ type: data.type, repartitions, categorieId, description, date: isoDate }, { onSuccess })
         }
     })
 
     return {
         transactionForm,
+        repartitionsFieldArray,
         errorsTransactionForm: transactionForm.formState.errors,
         onSubmitTransactionForm,
         isPending: apiCreateTransaction.isPending || apiUpdateTransaction.isPending,

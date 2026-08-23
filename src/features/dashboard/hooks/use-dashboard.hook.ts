@@ -2,7 +2,7 @@ import { TrendingDown, TrendingUp } from 'lucide-react'
 import { getUtilisateurConnecte } from '@/shared/storage'
 import { useAccountsQuery } from '@/features/accounts'
 import { useCategoriesQuery } from '@/features/categories'
-import { useAllTransactionsQuery, type TransactionDto } from '@/features/transactions'
+import { getComptesNoms, useAllTransactionsQuery, type TransactionDto } from '@/features/transactions'
 import type { AccountShare, CategorySpend, MonthlyFlow, RecentTransaction } from '../types/dashboard.type'
 
 const CATEGORY_COLORS = [
@@ -54,10 +54,12 @@ export const useDashboardHook = (selectedMonth: Date) => {
     const revenusParCompte = new Map<string, number>()
     for (const transaction of transactionsDuMois) {
         if (transaction.type !== 'Revenu') continue
-        revenusParCompte.set(
-            transaction.compteId,
-            (revenusParCompte.get(transaction.compteId) ?? 0) + Math.abs(Number(transaction.montant))
-        )
+        for (const repartition of transaction.repartitions) {
+            revenusParCompte.set(
+                repartition.compteId,
+                (revenusParCompte.get(repartition.compteId) ?? 0) + Math.abs(Number(repartition.montant))
+            )
+        }
     }
 
     const accountShares: AccountShare[] = (accounts ?? []).map((account, index) => {
@@ -110,8 +112,6 @@ export const useDashboardHook = (selectedMonth: Date) => {
             ...CATEGORY_COLORS[index % CATEGORY_COLORS.length],
         }))
 
-    const compteNom = (compteId: string) => (accounts ?? []).find((account) => account.id === compteId)?.nom ?? 'Compte'
-
     const recentTransactions: RecentTransaction[] = [...transactionsDuMois]
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
         .slice(0, 5)
@@ -127,7 +127,7 @@ export const useDashboardHook = (selectedMonth: Date) => {
                 }),
                 description: transaction.description || categorieNom(transaction.categorieId),
                 categorie: categorieNom(transaction.categorieId),
-                compte: compteNom(transaction.compteId),
+                compte: getComptesNoms(transaction.repartitions, accounts ?? []),
                 montant: signedMontant(transaction),
                 icon: isRevenu ? TrendingUp : TrendingDown,
                 iconBgClassName: isRevenu ? 'bg-emerald-50 dark:bg-emerald-950' : 'bg-red-50 dark:bg-red-950',

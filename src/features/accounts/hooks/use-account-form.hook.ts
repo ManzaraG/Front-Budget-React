@@ -18,12 +18,12 @@ export const useAccountFormHook = ({ open, account, onSuccess }: UseAccountFormH
 
     const accountForm = useForm<AccountFormData>({
         resolver: zodResolver(accountSchema),
-        defaultValues: { nom: account?.nom ?? '', typeId: account?.typeId ?? '' },
+        defaultValues: { nom: account?.nom ?? '', typeId: account?.typeId ?? '', deviseId: account?.deviseId ?? '' },
     })
 
     useEffect(() => {
         if (open) {
-            accountForm.reset({ nom: account?.nom ?? '', typeId: account?.typeId ?? '' })
+            accountForm.reset({ nom: account?.nom ?? '', typeId: account?.typeId ?? '', deviseId: account?.deviseId ?? '' })
         }
     }, [open, account, accountForm])
 

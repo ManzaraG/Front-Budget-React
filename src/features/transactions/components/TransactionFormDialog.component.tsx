@@ -1,9 +1,10 @@
-import { Loader2 } from 'lucide-react'
+import { Loader2, Plus, Trash2 } from 'lucide-react'
 import { Button } from '@/shared/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog'
 import { Input } from '@/shared/components/ui/input'
 import { Label } from '@/shared/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
+import { formatCurrency } from '@/shared/lib/currency'
 import { cn } from '@/shared/lib/utils'
 import { useTransactionFormHook } from '../hooks/use-transaction-form.hook'
 import type { CompteDto } from '@/features/accounts'
@@ -25,16 +26,18 @@ export const TransactionFormDialogComponent = ({
     accounts,
     categories,
 }: TransactionFormDialogProps) => {
-    const { transactionForm, errorsTransactionForm, onSubmitTransactionForm, isPending } = useTransactionFormHook({
-        open,
-        transaction,
-        onSuccess: () => onOpenChange(false),
-    })
+    const { transactionForm, repartitionsFieldArray, errorsTransactionForm, onSubmitTransactionForm, isPending } =
+        useTransactionFormHook({
+            open,
+            transaction,
+            onSuccess: () => onOpenChange(false),
+        })
 
     const type = transactionForm.watch('type')
-    const compteId = transactionForm.watch('compteId')
     const categorieId = transactionForm.watch('categorieId')
+    const repartitions = transactionForm.watch('repartitions')
     const categoriesForType = categories.filter((categorie) => categorie.type === type)
+    const totalMontant = repartitions.reduce((sum, repartition) => sum + (Number(repartition.montant) || 0), 0)
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -73,42 +76,82 @@ export const TransactionFormDialogComponent = ({
                         </button>
                     </div>
 
-                    <div className="space-y-1">
-                        <Label htmlFor="montant">Montant</Label>
-                        <Input
-                            id="montant"
-                            type="number"
-                            step="1"
-                            min="0"
-                            placeholder="0"
-                            {...transactionForm.register('montant')}
-                        />
-                        {errorsTransactionForm.montant && (
-                            <p className="text-xs text-destructive">{errorsTransactionForm.montant.message}</p>
-                        )}
-                    </div>
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                            <Label>Répartition par compte</Label>
+                            <span className="text-xs text-muted-foreground">Total : {formatCurrency(totalMontant)}</span>
+                        </div>
 
-                    <div className="space-y-1">
-                        <Label>Compte</Label>
-                        <Select
-                            value={compteId}
-                            onValueChange={(value) => transactionForm.setValue('compteId', value)}
-                            disabled={!!transaction}
-                        >
-                            <SelectTrigger>
-                                <SelectValue placeholder="Sélectionner un compte" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {accounts.map((account) => (
-                                    <SelectItem key={account.id} value={account.id}>
-                                        {account.nom}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        {errorsTransactionForm.compteId && (
-                            <p className="text-xs text-destructive">{errorsTransactionForm.compteId.message}</p>
+                        {repartitionsFieldArray.fields.map((field, index) => {
+                            const selectedCompteId = repartitions[index]?.compteId
+                            const usedElsewhere = new Set(
+                                repartitions.filter((_, otherIndex) => otherIndex !== index).map((r) => r.compteId)
+                            )
+                            const availableAccounts = accounts.filter(
+                                (account) => account.id === selectedCompteId || !usedElsewhere.has(account.id)
+                            )
+
+                            return (
+                                <div key={field.id} className="flex items-start gap-2">
+                                    <div className="flex-1 space-y-1">
+                                        <Select
+                                            value={selectedCompteId}
+                                            onValueChange={(value) =>
+                                                transactionForm.setValue(`repartitions.${index}.compteId`, value)
+                                            }
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Sélectionner un compte" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {availableAccounts.map((account) => (
+                                                    <SelectItem key={account.id} value={account.id}>
+                                                        {account.nom}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="w-32 space-y-1">
+                                        <Input
+                                            type="number"
+                                            step="1"
+                                            min="0"
+                                            placeholder="Montant"
+                                            {...transactionForm.register(`repartitions.${index}.montant`)}
+                                        />
+                                    </div>
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="icon"
+                                        disabled={repartitionsFieldArray.fields.length <= 1}
+                                        onClick={() => repartitionsFieldArray.remove(index)}
+                                        className="text-destructive hover:text-destructive"
+                                    >
+                                        <Trash2 className="size-4" />
+                                    </Button>
+                                </div>
+                            )
+                        })}
+
+                        {(errorsTransactionForm.repartitions?.message ||
+                            errorsTransactionForm.repartitions?.root?.message) && (
+                            <p className="text-xs text-destructive">
+                                {errorsTransactionForm.repartitions?.message ?? errorsTransactionForm.repartitions?.root?.message}
+                            </p>
                         )}
+
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            disabled={repartitionsFieldArray.fields.length >= accounts.length}
+                            onClick={() => repartitionsFieldArray.append({ compteId: '', montant: 0 })}
+                        >
+                            <Plus className="size-4" />
+                            Ajouter un compte
+                        </Button>
                     </div>
 
                     <div className="space-y-1">

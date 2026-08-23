@@ -6,6 +6,7 @@ import { useLogoutHook } from '@/shared/hooks'
 import { useAccountsQuery } from '../hooks/use-accounts-query.hook'
 import { useAccountTypesQuery } from '../hooks/use-account-types-query.hook'
 import { useDeleteAccountApi } from '../hooks/use-delete-account-api.hook'
+import { useDevisesQuery } from '../hooks/use-devises-query.hook'
 import { AccountFormDialogComponent } from './AccountFormDialog.component'
 import { AccountsListComponent } from './AccountsList.component'
 import type { CompteDto } from '../types/account.type'
@@ -14,6 +15,7 @@ export const AccountsComponent = () => {
     const handleLogout = useLogoutHook()
     const { data: accounts, isLoading } = useAccountsQuery()
     const { data: accountTypes } = useAccountTypesQuery()
+    const { data: devises } = useDevisesQuery()
     const apiDeleteAccount = useDeleteAccountApi()
 
     const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -88,6 +90,7 @@ export const AccountsComponent = () => {
                 onOpenChange={setIsDialogOpen}
                 account={editingAccount}
                 accountTypes={accountTypes ?? []}
+                devises={devises ?? []}
             />
         </div>
     )

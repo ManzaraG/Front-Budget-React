@@ -7,6 +7,7 @@ import { formatCurrency } from '@/shared/lib/currency'
 import { cn } from '@/shared/lib/utils'
 import type { CompteDto } from '@/features/accounts'
 import type { CategorieDto } from '@/features/categories'
+import { getComptesNoms } from '../lib/get-comptes-noms'
 import type { TransactionDto } from '../types/transaction.type'
 
 interface TransactionsListProps {
@@ -28,7 +29,6 @@ export const TransactionsListComponent = ({
     onDelete,
     onDeleteSelected,
 }: TransactionsListProps) => {
-    const getCompteNom = (id: string) => accounts.find((account) => account.id === id)?.nom ?? '—'
     const getCategorieNom = (id: string | null) =>
         id ? (categories.find((categorie) => categorie.id === id)?.nom ?? '—') : '—'
 
@@ -87,7 +87,7 @@ export const TransactionsListComponent = ({
             header: 'Compte',
             meta: { className: 'w-36' },
             cell: ({ row }) => (
-                <span className="truncate text-muted-foreground">{getCompteNom(row.original.compteId)}</span>
+                <span className="truncate text-muted-foreground">{getComptesNoms(row.original.repartitions, accounts)}</span>
             ),
         },
         {

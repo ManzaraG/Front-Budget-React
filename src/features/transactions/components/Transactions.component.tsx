@@ -7,6 +7,7 @@ import { useAccountsQuery } from '@/features/accounts'
 import { useCategoriesQuery } from '@/features/categories'
 import { useAllTransactionsQuery } from '../hooks/use-all-transactions-query.hook'
 import { useDeleteTransactionApi } from '../hooks/use-delete-transaction-api.hook'
+import { getComptesNoms } from '../lib/get-comptes-noms'
 import { TransactionFormDialogComponent } from './TransactionFormDialog.component'
 import { TransactionsListComponent } from './TransactionsList.component'
 import type { TransactionDto } from '../types/transaction.type'
@@ -27,11 +28,11 @@ export const TransactionsComponent = () => {
         if (!query) return transactions ?? []
         return (transactions ?? []).filter((transaction) => {
             const categorieNom = (categories ?? []).find((categorie) => categorie.id === transaction.categorieId)?.nom ?? ''
-            const compteNom = (accounts ?? []).find((account) => account.id === transaction.compteId)?.nom ?? ''
+            const comptesNoms = getComptesNoms(transaction.repartitions, accounts ?? [])
             return (
                 (transaction.description ?? '').toLowerCase().includes(query) ||
                 categorieNom.toLowerCase().includes(query) ||
-                compteNom.toLowerCase().includes(query)
+                comptesNoms.toLowerCase().includes(query)
             )
         })
     }, [transactions, searchQuery, accounts, categories])
