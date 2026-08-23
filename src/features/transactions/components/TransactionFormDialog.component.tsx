@@ -51,7 +51,9 @@ export const TransactionFormDialogComponent = ({
                             onClick={() => transactionForm.setValue('type', 'Depense')}
                             className={cn(
                                 'rounded-lg border px-3 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50',
-                                type === 'Depense' ? 'border-red-600 bg-red-50 text-red-600' : 'text-muted-foreground'
+                                type === 'Depense'
+                                    ? 'border-red-600 bg-red-50 text-red-600 dark:bg-red-950 dark:text-red-400'
+                                    : 'text-muted-foreground'
                             )}
                         >
                             Dépense
@@ -62,7 +64,9 @@ export const TransactionFormDialogComponent = ({
                             onClick={() => transactionForm.setValue('type', 'Revenu')}
                             className={cn(
                                 'rounded-lg border px-3 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50',
-                                type === 'Revenu' ? 'border-emerald-600 bg-emerald-50 text-emerald-600' : 'text-muted-foreground'
+                                type === 'Revenu'
+                                    ? 'border-emerald-600 bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400'
+                                    : 'text-muted-foreground'
                             )}
                         >
                             Revenu

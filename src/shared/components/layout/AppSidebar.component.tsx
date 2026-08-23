@@ -24,13 +24,13 @@ export const AppSidebarComponent = ({ onLogout }: AppSidebarProps) => {
     const { pathname } = useLocation()
 
     return (
-        <aside className="flex w-16 shrink-0 flex-col justify-between border-r bg-white px-2 py-6 lg:w-64 lg:px-4">
+        <aside className="flex w-16 shrink-0 flex-col justify-between border-r bg-card px-2 py-6 lg:w-64 lg:px-4">
             <div className="space-y-8">
                 <div className="flex items-center justify-center gap-2 px-0 lg:justify-start lg:px-2">
                     <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white">
                         <BarChart3 className="size-5" />
                     </span>
-                    <span className="hidden text-lg font-bold text-slate-900 lg:inline">Mon Budget</span>
+                    <span className="hidden text-lg font-bold text-foreground lg:inline">Mon Budget</span>
                 </div>
 
                 <nav className="space-y-1">
@@ -38,7 +38,9 @@ export const AppSidebarComponent = ({ onLogout }: AppSidebarProps) => {
                         const active = !!to && (to === '/' ? pathname === '/' : pathname.startsWith(to))
                         const itemClassName = cn(
                             'flex w-full items-center justify-center gap-3 rounded-full px-3 py-2.5 text-sm font-medium transition-colors lg:justify-start',
-                            active ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                            active
+                                ? 'bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400'
+                                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                         )
 
                         if (!to) {
@@ -71,7 +73,7 @@ export const AppSidebarComponent = ({ onLogout }: AppSidebarProps) => {
                     type="button"
                     title="Se déconnecter"
                     onClick={onLogout}
-                    className="flex w-full items-center justify-center gap-3 rounded-full px-3 py-2.5 text-sm font-medium text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600 lg:justify-start"
+                    className="flex w-full items-center justify-center gap-3 rounded-full px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950 dark:hover:text-red-400 lg:justify-start"
                 >
                     <LogOut className="size-4.5 shrink-0" />
                     <span className="hidden lg:inline">Se déconnecter</span>

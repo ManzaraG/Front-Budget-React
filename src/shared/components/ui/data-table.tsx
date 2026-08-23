@@ -105,13 +105,13 @@ export function DataTable<TData, TValue>({
         <Card className="py-0">
             <CardContent className="px-0">
                 {enableRowSelection && selectedRows.length > 0 && (
-                    <div className="bg-muted/40 flex items-center justify-between border-b px-6 py-2 text-[11px] tracking-wider uppercase">
+                    <div className="bg-muted/40 flex items-center justify-between border-b px-6 py-2 text-[11px] tracking-wider capitalize">
                         <span className="text-muted-foreground">{selectedRows.length} sélectionné(s)</span>
                         {onDeleteSelected && (
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-[11px] tracking-wider uppercase text-destructive hover:text-destructive"
+                                className="text-[11px] tracking-wider capitalize text-destructive hover:text-destructive"
                                 onClick={() => {
                                     onDeleteSelected(selectedRows.map((row) => row.original))
                                     setRowSelection({})
@@ -154,13 +154,13 @@ export function DataTable<TData, TValue>({
                 </div>
 
                 {pageSize && (
-                    <div className="flex items-center justify-between border-t px-6 py-3 text-[11px] tracking-wider uppercase">
+                    <div className="flex items-center justify-between border-t px-6 py-3 text-[11px] tracking-wider capitalize">
                         <span className="text-muted-foreground">{data.length} ligne(s)</span>
                         <div className="flex items-center gap-3">
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className="text-[11px] tracking-wider uppercase"
+                                className="text-[11px] tracking-wider capitalize"
                                 onClick={() => table.previousPage()}
                                 disabled={!table.getCanPreviousPage()}
                             >
@@ -172,7 +172,7 @@ export function DataTable<TData, TValue>({
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className="text-[11px] tracking-wider uppercase"
+                                className="text-[11px] tracking-wider capitalize"
                                 onClick={() => table.nextPage()}
                                 disabled={!table.getCanNextPage()}
                             >

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { AppSidebarComponent } from '@/shared/components/layout'
+import { AppSidebarComponent, AppTopBarComponent } from '@/shared/components/layout'
 import { useLogoutHook } from '@/shared/hooks'
 import { TransactionFormDialogComponent } from '@/features/transactions'
 import { useDashboardHook } from '../hooks/use-dashboard.hook'
@@ -7,7 +7,6 @@ import { AccountSummaryCardsComponent } from './AccountSummaryCards.component'
 import { AnalyticsChartCardComponent } from './AnalyticsChartCard.component'
 import { BudgetSummaryPanelComponent } from './BudgetSummaryPanel.component'
 import { DashboardHeaderComponent } from './DashboardHeader.component'
-import { DashboardTopBarComponent } from './DashboardTopBar.component'
 import { TransactionsTableComponent } from './TransactionsTable.component'
 
 const formatMonthLabel = (date: Date) => {
@@ -19,7 +18,6 @@ export const DashboardComponent = () => {
     const handleLogout = useLogoutHook()
     const [selectedMonth, setSelectedMonth] = useState(() => new Date())
     const {
-        utilisateur,
         hasAccounts,
         accounts,
         allCategories,
@@ -46,42 +44,51 @@ export const DashboardComponent = () => {
     }, [transactions, searchQuery])
 
     return (
-        <div className="flex min-h-screen bg-slate-50">
+        <div className="flex min-h-screen bg-background">
             <AppSidebarComponent onLogout={handleLogout} />
 
-            <div className="min-w-0 flex-1 space-y-6 p-6">
-                <DashboardTopBarComponent
-                    utilisateur={utilisateur}
+            <div className="flex min-w-0 flex-1 flex-col">
+                <AppTopBarComponent
+                    title="Tableau de bord"
                     searchQuery={searchQuery}
                     onSearchChange={setSearchQuery}
+                    searchPlaceholder="Rechercher un fonds, une personne, un ordre..."
+                    notificationCount={3}
                 />
 
-                <DashboardHeaderComponent
-                    selectedMonth={selectedMonth}
-                    onSelectedMonthChange={setSelectedMonth}
-                    onAddTransaction={() => setIsAddTransactionOpen(true)}
-                    canAddTransaction={hasAccounts}
-                />
+                <div className="min-w-0 flex-1 space-y-6 p-6">
+                    <div>
+                        <h2 className="text-2xl font-bold">Tableau de bord</h2>
+                        <p className="mt-1 text-sm text-muted-foreground">Vue d'ensemble de votre activité</p>
+                    </div>
 
-                <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[1fr_320px]">
-                    <main className="min-w-0 space-y-6">
-                        <AccountSummaryCardsComponent accounts={accountShares} />
+                    <DashboardHeaderComponent
+                        selectedMonth={selectedMonth}
+                        onSelectedMonthChange={setSelectedMonth}
+                        onAddTransaction={() => setIsAddTransactionOpen(true)}
+                        canAddTransaction={hasAccounts}
+                    />
 
-                        <AnalyticsChartCardComponent data={monthlyFlow} />
+                    <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[1fr_320px]">
+                        <main className="min-w-0 space-y-6">
+                            <AccountSummaryCardsComponent accounts={accountShares} />
 
-                        <TransactionsTableComponent transactions={filteredTransactions} />
-                    </main>
+                            <AnalyticsChartCardComponent data={monthlyFlow} />
 
-                    <aside className="min-w-0">
-                        <BudgetSummaryPanelComponent
-                            hasAccounts={hasAccounts}
-                            monthLabel={formatMonthLabel(selectedMonth)}
-                            revenusCeMois={revenusCeMois}
-                            depensesCeMois={depensesCeMois}
-                            accounts={accountShares}
-                            categories={categories}
-                        />
-                    </aside>
+                            <TransactionsTableComponent transactions={filteredTransactions} />
+                        </main>
+
+                        <aside className="min-w-0">
+                            <BudgetSummaryPanelComponent
+                                hasAccounts={hasAccounts}
+                                monthLabel={formatMonthLabel(selectedMonth)}
+                                revenusCeMois={revenusCeMois}
+                                depensesCeMois={depensesCeMois}
+                                accounts={accountShares}
+                                categories={categories}
+                            />
+                        </aside>
+                    </div>
                 </div>
             </div>
 

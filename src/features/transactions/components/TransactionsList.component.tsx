@@ -53,7 +53,9 @@ export const TransactionsListComponent = ({
                         <span
                             className={cn(
                                 'flex size-8 shrink-0 items-center justify-center rounded-lg',
-                                isRevenu ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'
+                                isRevenu
+                                    ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400'
+                                    : 'bg-red-50 text-red-600 dark:bg-red-950 dark:text-red-400'
                             )}
                         >
                             {isRevenu ? <ArrowUpRight className="size-4" /> : <ArrowDownLeft className="size-4" />}

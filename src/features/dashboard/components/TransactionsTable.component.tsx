@@ -47,7 +47,7 @@ export const TransactionsTableComponent = ({ transactions }: TransactionsTablePr
                             const Icon = transaction.icon
 
                             return (
-                                <tr key={transaction.id} className="border-b last:border-0 hover:bg-blue-50/40">
+                                <tr key={transaction.id} className="border-b last:border-0 hover:bg-blue-50/40 dark:hover:bg-blue-950/40">
                                     <td className="px-6 py-3 whitespace-nowrap text-muted-foreground">{transaction.date}</td>
                                     <td className="px-6 py-3">
                                         <div className="flex items-center gap-2.5">

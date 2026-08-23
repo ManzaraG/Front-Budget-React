@@ -15,12 +15,12 @@ const CATEGORY_COLORS = [
 ]
 
 const ACCOUNT_COLORS = [
-    { iconBgClassName: 'bg-blue-50', iconColorClassName: 'text-blue-600', barClassName: 'bg-blue-600' },
-    { iconBgClassName: 'bg-violet-50', iconColorClassName: 'text-violet-500', barClassName: 'bg-violet-500' },
-    { iconBgClassName: 'bg-amber-50', iconColorClassName: 'text-amber-500', barClassName: 'bg-amber-400' },
-    { iconBgClassName: 'bg-rose-50', iconColorClassName: 'text-rose-500', barClassName: 'bg-rose-500' },
-    { iconBgClassName: 'bg-emerald-50', iconColorClassName: 'text-emerald-600', barClassName: 'bg-emerald-500' },
-    { iconBgClassName: 'bg-slate-100', iconColorClassName: 'text-slate-500', barClassName: 'bg-slate-400' },
+    { iconBgClassName: 'bg-blue-50 dark:bg-blue-950', iconColorClassName: 'text-blue-600', barClassName: 'bg-blue-600' },
+    { iconBgClassName: 'bg-violet-50 dark:bg-violet-950', iconColorClassName: 'text-violet-500', barClassName: 'bg-violet-500' },
+    { iconBgClassName: 'bg-amber-50 dark:bg-amber-950', iconColorClassName: 'text-amber-500', barClassName: 'bg-amber-400' },
+    { iconBgClassName: 'bg-rose-50 dark:bg-rose-950', iconColorClassName: 'text-rose-500', barClassName: 'bg-rose-500' },
+    { iconBgClassName: 'bg-emerald-50 dark:bg-emerald-950', iconColorClassName: 'text-emerald-600', barClassName: 'bg-emerald-500' },
+    { iconBgClassName: 'bg-slate-100 dark:bg-slate-800', iconColorClassName: 'text-slate-500', barClassName: 'bg-slate-400' },
 ]
 
 const formatMonthLabel = (date: Date) => {
@@ -130,7 +130,7 @@ export const useDashboardHook = (selectedMonth: Date) => {
                 compte: compteNom(transaction.compteId),
                 montant: signedMontant(transaction),
                 icon: isRevenu ? TrendingUp : TrendingDown,
-                iconBgClassName: isRevenu ? 'bg-emerald-50' : 'bg-red-50',
+                iconBgClassName: isRevenu ? 'bg-emerald-50 dark:bg-emerald-950' : 'bg-red-50 dark:bg-red-950',
                 iconColorClassName: isRevenu ? 'text-emerald-600' : 'text-red-600',
                 dotClassName: isRevenu ? 'bg-emerald-600' : 'bg-red-600',
             }

@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Plus } from 'lucide-react'
-import { AppSidebarComponent } from '@/shared/components/layout'
+import { AppSidebarComponent, AppTopBarComponent } from '@/shared/components/layout'
 import { Button } from '@/shared/components/ui/button'
 import { useLogoutHook } from '@/shared/hooks'
 import { useAccountsQuery } from '@/features/accounts'
@@ -20,6 +20,21 @@ export const TransactionsComponent = () => {
 
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [editingTransaction, setEditingTransaction] = useState<TransactionDto | null>(null)
+    const [searchQuery, setSearchQuery] = useState('')
+
+    const filteredTransactions = useMemo(() => {
+        const query = searchQuery.trim().toLowerCase()
+        if (!query) return transactions ?? []
+        return (transactions ?? []).filter((transaction) => {
+            const categorieNom = (categories ?? []).find((categorie) => categorie.id === transaction.categorieId)?.nom ?? ''
+            const compteNom = (accounts ?? []).find((account) => account.id === transaction.compteId)?.nom ?? ''
+            return (
+                (transaction.description ?? '').toLowerCase().includes(query) ||
+                categorieNom.toLowerCase().includes(query) ||
+                compteNom.toLowerCase().includes(query)
+            )
+        })
+    }, [transactions, searchQuery, accounts, categories])
 
     const openCreateDialog = () => {
         setEditingTransaction(null)
@@ -44,36 +59,45 @@ export const TransactionsComponent = () => {
     }
 
     return (
-        <div className="flex min-h-screen bg-slate-50">
+        <div className="flex min-h-screen bg-background">
             <AppSidebarComponent onLogout={handleLogout} />
 
-            <main className="min-w-0 flex-1 space-y-6 p-6">
-                <header className="flex flex-wrap items-center justify-between gap-4">
-                    <div>
-                        <h1 className="text-2xl font-bold">Transactions</h1>
-                        <p className="mt-1 text-sm text-muted-foreground">Suivez vos revenus et dépenses</p>
-                    </div>
-                    <Button
-                        onClick={openCreateDialog}
-                        disabled={!accounts || accounts.length === 0}
-                        title={!accounts || accounts.length === 0 ? 'Créez un compte avant d’ajouter une transaction' : undefined}
-                        className="rounded-lg bg-blue-600 hover:bg-blue-700"
-                    >
-                        <Plus className="size-4" />
-                        Ajouter une transaction
-                    </Button>
-                </header>
-
-                <TransactionsListComponent
-                    transactions={transactions ?? []}
-                    accounts={accounts ?? []}
-                    categories={categories ?? []}
-                    isLoading={isLoading}
-                    onEdit={openEditDialog}
-                    onDelete={handleDelete}
-                    onDeleteSelected={handleDeleteSelected}
+            <div className="flex min-w-0 flex-1 flex-col">
+                <AppTopBarComponent
+                    title="Transactions"
+                    searchQuery={searchQuery}
+                    onSearchChange={setSearchQuery}
+                    searchPlaceholder="Rechercher une transaction..."
                 />
-            </main>
+
+                <main className="min-w-0 flex-1 space-y-6 p-6">
+                    <header className="flex flex-wrap items-center justify-between gap-4">
+                        <div>
+                            <h1 className="text-2xl font-bold">Transactions</h1>
+                            <p className="mt-1 text-sm text-muted-foreground">Suivez vos revenus et dépenses</p>
+                        </div>
+                        <Button
+                            onClick={openCreateDialog}
+                            disabled={!accounts || accounts.length === 0}
+                            title={!accounts || accounts.length === 0 ? 'Créez un compte avant d’ajouter une transaction' : undefined}
+                            className="rounded-lg bg-blue-600 hover:bg-blue-700"
+                        >
+                            <Plus className="size-4" />
+                            Ajouter une transaction
+                        </Button>
+                    </header>
+
+                    <TransactionsListComponent
+                        transactions={filteredTransactions}
+                        accounts={accounts ?? []}
+                        categories={categories ?? []}
+                        isLoading={isLoading}
+                        onEdit={openEditDialog}
+                        onDelete={handleDelete}
+                        onDeleteSelected={handleDeleteSelected}
+                    />
+                </main>
+            </div>
 
             <TransactionFormDialogComponent
                 open={isDialogOpen}

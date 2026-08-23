@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Plus } from 'lucide-react'
-import { AppSidebarComponent } from '@/shared/components/layout'
+import { AppSidebarComponent, AppTopBarComponent } from '@/shared/components/layout'
 import { Button } from '@/shared/components/ui/button'
 import { useLogoutHook } from '@/shared/hooks'
 import { useCategoriesQuery } from '../hooks/use-categories-query.hook'
@@ -16,6 +16,13 @@ export const CategoriesComponent = () => {
 
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [editingCategorie, setEditingCategorie] = useState<CategorieDto | null>(null)
+    const [searchQuery, setSearchQuery] = useState('')
+
+    const filteredCategories = useMemo(() => {
+        const query = searchQuery.trim().toLowerCase()
+        if (!query) return categories ?? []
+        return (categories ?? []).filter((categorie) => categorie.nom.toLowerCase().includes(query))
+    }, [categories, searchQuery])
 
     const openCreateDialog = () => {
         setEditingCategorie(null)
@@ -40,31 +47,40 @@ export const CategoriesComponent = () => {
     }
 
     return (
-        <div className="flex min-h-screen bg-slate-50">
+        <div className="flex min-h-screen bg-background">
             <AppSidebarComponent onLogout={handleLogout} />
 
-            <main className="min-w-0 flex-1 space-y-6 p-6">
-                <header className="flex flex-wrap items-center justify-between gap-4">
-                    <div>
-                        <h1 className="text-2xl font-bold">Catégories</h1>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            Organisez vos transactions par catégorie
-                        </p>
-                    </div>
-                    <Button onClick={openCreateDialog} className="rounded-lg bg-blue-600 hover:bg-blue-700">
-                        <Plus className="size-4" />
-                        Ajouter une catégorie
-                    </Button>
-                </header>
-
-                <CategoriesListComponent
-                    categories={categories ?? []}
-                    isLoading={isLoading}
-                    onEdit={openEditDialog}
-                    onDelete={handleDelete}
-                    onDeleteSelected={handleDeleteSelected}
+            <div className="flex min-w-0 flex-1 flex-col">
+                <AppTopBarComponent
+                    title="Catégories"
+                    searchQuery={searchQuery}
+                    onSearchChange={setSearchQuery}
+                    searchPlaceholder="Rechercher une catégorie..."
                 />
-            </main>
+
+                <main className="min-w-0 flex-1 space-y-6 p-6">
+                    <header className="flex flex-wrap items-center justify-between gap-4">
+                        <div>
+                            <h1 className="text-2xl font-bold">Catégories</h1>
+                            <p className="mt-1 text-sm text-muted-foreground">
+                                Organisez vos transactions par catégorie
+                            </p>
+                        </div>
+                        <Button onClick={openCreateDialog} className="rounded-lg bg-blue-600 hover:bg-blue-700">
+                            <Plus className="size-4" />
+                            Ajouter une catégorie
+                        </Button>
+                    </header>
+
+                    <CategoriesListComponent
+                        categories={filteredCategories}
+                        isLoading={isLoading}
+                        onEdit={openEditDialog}
+                        onDelete={handleDelete}
+                        onDeleteSelected={handleDeleteSelected}
+                    />
+                </main>
+            </div>
 
             <CategorieFormDialogComponent open={isDialogOpen} onOpenChange={setIsDialogOpen} categorie={editingCategorie} />
         </div>

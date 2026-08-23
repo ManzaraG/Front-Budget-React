@@ -32,7 +32,7 @@ export const AccountsListComponent = ({
             meta: { className: 'w-auto' },
             cell: ({ row }) => (
                 <div className="flex min-w-0 items-center gap-2.5">
-                    <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                    <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400">
                         <Wallet className="size-4" />
                     </span>
                     <span className="truncate font-medium">{row.original.nom}</span>
@@ -44,7 +44,7 @@ export const AccountsListComponent = ({
             header: 'Type',
             meta: { className: 'w-40' },
             cell: ({ row }) => (
-                <span className="text-muted-foreground inline-flex items-center rounded-md border border-border bg-muted/40 px-2 py-0.5 text-[11px] font-medium tracking-wide uppercase">
+                <span className="text-muted-foreground inline-flex items-center rounded-md border border-border bg-muted/40 px-2 py-0.5 text-sm font-medium tracking-wide capitalize">
                     {getTypeNom(row.original.typeId)}
                 </span>
             ),
@@ -56,10 +56,10 @@ export const AccountsListComponent = ({
             cell: ({ row }) => (
                 <span
                     className={cn(
-                        'inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium tracking-wide uppercase',
+                        'inline-flex items-center rounded-md border px-2 py-0.5 text-sm font-medium tracking-wide capitalize',
                         row.original.estActif
-                            ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-                            : 'border-slate-200 bg-slate-100 text-slate-600'
+                            ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-400'
+                            : 'border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400'
                     )}
                 >
                     {row.original.estActif ? 'Actif' : 'Inactif'}

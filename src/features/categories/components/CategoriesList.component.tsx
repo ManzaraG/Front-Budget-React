@@ -34,7 +34,9 @@ export const CategoriesListComponent = ({
                         <span
                             className={cn(
                                 'flex size-8 shrink-0 items-center justify-center rounded-lg',
-                                isRevenu ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'
+                                isRevenu
+                                    ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400'
+                                    : 'bg-red-50 text-red-600 dark:bg-red-950 dark:text-red-400'
                             )}
                         >
                             <Tags className="size-4" />
@@ -54,10 +56,10 @@ export const CategoriesListComponent = ({
                 return (
                     <span
                         className={cn(
-                            'inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium tracking-wide uppercase',
+                            'inline-flex items-center rounded-md border px-2 py-0.5 text-sm font-medium tracking-wide capitalize',
                             isRevenu
-                                ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-                                : 'border-red-200 bg-red-50 text-red-700'
+                                ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-400'
+                                : 'border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-400'
                         )}
                     >
                         {isRevenu ? 'Revenu' : 'Dépense'}
