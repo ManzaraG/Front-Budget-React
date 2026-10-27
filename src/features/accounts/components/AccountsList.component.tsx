@@ -1,5 +1,5 @@
 import { Pencil, Trash2, Wallet } from 'lucide-react'
-import type { ColumnDef } from '@tanstack/react-table'
+import type { ColumnDef, OnChangeFn, RowSelectionState } from '@tanstack/react-table'
 import { Button } from '@/shared/components/ui/button'
 import { Card, CardContent } from '@/shared/components/ui/card'
 import { DataTable } from '@/shared/components/ui/data-table'
@@ -13,6 +13,8 @@ interface AccountsListProps {
     onEdit: (account: CompteDto) => void
     onDelete: (account: CompteDto) => void
     onDeleteSelected?: (accounts: CompteDto[]) => void
+    rowSelection: RowSelectionState
+    onRowSelectionChange: OnChangeFn<RowSelectionState>
 }
 
 export const AccountsListComponent = ({
@@ -22,6 +24,8 @@ export const AccountsListComponent = ({
     onEdit,
     onDelete,
     onDeleteSelected,
+    rowSelection,
+    onRowSelectionChange,
 }: AccountsListProps) => {
     const getTypeNom = (typeId: string) => accountTypes.find((accountType) => accountType.id === typeId)?.nom ?? '—'
 
@@ -104,16 +108,18 @@ export const AccountsListComponent = ({
             columns={columns}
             data={accounts}
             isLoading={isLoading}
-            loadingText="Chargement des comptes..."
+            loadingText="Chargement des sources..."
             getRowId={(account) => account.id}
             enableRowSelection
             onDeleteSelected={onDeleteSelected}
+            rowSelection={rowSelection}
+            onRowSelectionChange={onRowSelectionChange}
             pageSize={10}
             emptyState={
                 <Card>
                     <CardContent className="flex flex-col items-center gap-2 py-12 text-center text-muted-foreground">
                         <Wallet className="size-8" />
-                        <p>Aucun compte pour le moment</p>
+                        <p>Aucune source de revenu pour le moment</p>
                     </CardContent>
                 </Card>
             }

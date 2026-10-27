@@ -17,6 +17,14 @@ export const accountApi = {
         const { data } = await apiClient.put<CompteDto>(`/api/accounts/${id}`, dto)
         return data
     },
+    activate: async (id: string): Promise<CompteDto> => {
+        const { data } = await apiClient.patch<CompteDto>(`/api/accounts/${id}/activate`)
+        return data
+    },
+    deactivate: async (id: string): Promise<CompteDto> => {
+        const { data } = await apiClient.patch<CompteDto>(`/api/accounts/${id}/deactivate`)
+        return data
+    },
     remove: async (id: string): Promise<void> => {
         await apiClient.delete(`/api/accounts/${id}`)
     },

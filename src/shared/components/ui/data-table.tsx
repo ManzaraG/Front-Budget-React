@@ -6,6 +6,7 @@ import {
     getPaginationRowModel,
     useReactTable,
     type ColumnDef,
+    type OnChangeFn,
     type RowSelectionState,
 } from '@tanstack/react-table'
 import { Button } from '@/shared/components/ui/button'
@@ -33,6 +34,8 @@ interface DataTableProps<TData, TValue> {
     getRowId?: (row: TData) => string
     enableRowSelection?: boolean
     onDeleteSelected?: (rows: TData[]) => void
+    rowSelection?: RowSelectionState
+    onRowSelectionChange?: OnChangeFn<RowSelectionState>
     pageSize?: number
 }
 
@@ -46,9 +49,13 @@ export function DataTable<TData, TValue>({
     getRowId,
     enableRowSelection = false,
     onDeleteSelected,
+    rowSelection: controlledRowSelection,
+    onRowSelectionChange,
     pageSize,
 }: DataTableProps<TData, TValue>) {
-    const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+    const [internalRowSelection, setInternalRowSelection] = useState<RowSelectionState>({})
+    const rowSelection = controlledRowSelection ?? internalRowSelection
+    const setRowSelection = onRowSelectionChange ?? setInternalRowSelection
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: pageSize ?? NO_PAGINATION_PAGE_SIZE })
 
     const tableColumns: ColumnDef<TData, TValue>[] = enableRowSelection
