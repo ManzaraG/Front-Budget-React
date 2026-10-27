@@ -1,8 +1,10 @@
 import { TrendingDown, TrendingUp } from 'lucide-react'
+import { useQueries } from '@tanstack/react-query'
 import { getUtilisateurConnecte } from '@/shared/storage'
 import { useAccountsQuery } from '@/features/accounts'
 import { useCategoriesQuery } from '@/features/categories'
-import { getComptesNoms, useAllTransactionsQuery, type TransactionDto } from '@/features/transactions'
+import { TRANSACTIONS_QUERY_KEY } from '@/features/transactions'
+import { dashboardApi } from '../api/dashboard.api'
 import type { AccountShare, CategorySpend, MonthlyFlow, RecentTransaction } from '../types/dashboard.type'
 
 const CATEGORY_COLORS = [
@@ -28,125 +30,80 @@ const formatMonthLabel = (date: Date) => {
     return label.charAt(0).toUpperCase() + label.slice(1)
 }
 
-const isSameMonth = (date: Date, reference: Date) =>
-    date.getFullYear() === reference.getFullYear() && date.getMonth() === reference.getMonth()
-
-// L'API stocke toujours un montant positif ; le signe est dérivé du type ('Revenu' ou 'Depense').
-const signedMontant = (transaction: TransactionDto) =>
-    transaction.type === 'Revenu' ? Math.abs(Number(transaction.montant)) : -Math.abs(Number(transaction.montant))
+// Les clés sont préfixées par celle des transactions : toute écriture sur une transaction rafraîchit le dashboard.
+const DASHBOARD_QUERY_KEY = [...TRANSACTIONS_QUERY_KEY, 'dashboard']
 
 export const useDashboardHook = (selectedMonth: Date) => {
     const utilisateur = getUtilisateurConnecte()
+    const period = { annee: selectedMonth.getFullYear(), mois: selectedMonth.getMonth() + 1 }
 
     const { data: accounts } = useAccountsQuery()
     const { data: categories } = useCategoriesQuery()
-    const { data: transactions, isLoading } = useAllTransactionsQuery((accounts ?? []).map((account) => account.id))
 
-    const transactionsDuMois = transactions.filter((transaction) => isSameMonth(new Date(transaction.date), selectedMonth))
-    const revenusCeMois = transactionsDuMois
-        .filter((transaction) => transaction.type === 'Revenu')
-        .reduce((sum, transaction) => sum + Math.abs(Number(transaction.montant)), 0)
-    const depensesCeMois = transactionsDuMois
-        .filter((transaction) => transaction.type === 'Depense')
-        .reduce((sum, transaction) => sum + Math.abs(Number(transaction.montant)), 0)
-
-    // Revenu de chacun des comptes sur le mois sélectionné, exprimé en part du total des revenus.
-    const revenusParCompte = new Map<string, number>()
-    for (const transaction of transactionsDuMois) {
-        if (transaction.type !== 'Revenu') continue
-        for (const repartition of transaction.repartitions) {
-            revenusParCompte.set(
-                repartition.compteId,
-                (revenusParCompte.get(repartition.compteId) ?? 0) + Math.abs(Number(repartition.montant))
-            )
-        }
-    }
-
-    const accountShares: AccountShare[] = (accounts ?? []).map((account, index) => {
-        const montant = revenusParCompte.get(account.id) ?? 0
-        return {
-            id: account.id,
-            nom: account.nom,
-            montant,
-            percent: revenusCeMois > 0 ? (montant / revenusCeMois) * 100 : 0,
-            ...ACCOUNT_COLORS[index % ACCOUNT_COLORS.length],
-        }
+    const [monthly, trend, accountsBudget, categoriesBudget, recent] = useQueries({
+        queries: [
+            { queryKey: [...DASHBOARD_QUERY_KEY, 'monthly', period], queryFn: () => dashboardApi.getMonthly(period) },
+            { queryKey: [...DASHBOARD_QUERY_KEY, 'trend', period], queryFn: () => dashboardApi.getTrend(period) },
+            { queryKey: [...DASHBOARD_QUERY_KEY, 'accounts', period], queryFn: () => dashboardApi.getAccounts(period) },
+            { queryKey: [...DASHBOARD_QUERY_KEY, 'categories', period], queryFn: () => dashboardApi.getCategories(period) },
+            { queryKey: [...DASHBOARD_QUERY_KEY, 'recent', period], queryFn: () => dashboardApi.getRecentTransactions(period) },
+        ],
     })
 
-    // Revenus / dépenses de chacun des 6 mois se terminant au mois sélectionné (valeurs mensuelles, non cumulées).
-    const monthlyFlow: MonthlyFlow[] = Array.from({ length: 6 }, (_, index) => {
-        const offset = 5 - index
-        const monthDate = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - offset, 1)
-        const monthTransactions = transactions.filter((transaction) => isSameMonth(new Date(transaction.date), monthDate))
+    const accountShares: AccountShare[] = (accountsBudget.data ?? []).map((account, index) => ({
+        id: account.sourceRevenuId,
+        nom: account.nom,
+        montant: account.montant,
+        percent: account.pourcentage,
+        ...ACCOUNT_COLORS[index % ACCOUNT_COLORS.length],
+    }))
+
+    const monthlyFlow: MonthlyFlow[] = (trend.data ?? []).map((point) => ({
+        label: formatMonthLabel(new Date(point.annee, point.mois - 1, 1)),
+        revenus: point.totalRevenus,
+        depenses: point.totalDepenses,
+    }))
+
+    const categoriesSpend: CategorySpend[] = (categoriesBudget.data ?? []).map((categorie, index) => ({
+        id: categorie.categorieId,
+        label: categorie.nom,
+        value: categorie.montant,
+        percent: categorie.pourcentage,
+        ...CATEGORY_COLORS[index % CATEGORY_COLORS.length],
+    }))
+
+    const recentTransactions: RecentTransaction[] = (recent.data ?? []).map((transaction) => {
+        const isRevenu = transaction.type === 'Revenu'
 
         return {
-            label: formatMonthLabel(monthDate),
-            revenus: monthTransactions
-                .filter((transaction) => transaction.type === 'Revenu')
-                .reduce((sum, transaction) => sum + Math.abs(Number(transaction.montant)), 0),
-            depenses: monthTransactions
-                .filter((transaction) => transaction.type === 'Depense')
-                .reduce((sum, transaction) => sum + Math.abs(Number(transaction.montant)), 0),
+            id: transaction.id,
+            date: new Date(transaction.date).toLocaleDateString('fr-FR', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+            }),
+            description: transaction.description || transaction.categorieNom,
+            categorie: transaction.categorieNom,
+            compte: transaction.sourcesRevenu.join(', '),
+            montant: isRevenu ? transaction.montant : -transaction.montant,
+            icon: isRevenu ? TrendingUp : TrendingDown,
+            iconBgClassName: isRevenu ? 'bg-emerald-50 dark:bg-emerald-950' : 'bg-red-50 dark:bg-red-950',
+            iconColorClassName: isRevenu ? 'text-emerald-600' : 'text-red-600',
+            dotClassName: isRevenu ? 'bg-emerald-600' : 'bg-red-600',
         }
     })
-
-    const categorieNom = (categorieId: string | null) => {
-        if (!categorieId) return 'Sans catégorie'
-        return (categories ?? []).find((categorie) => categorie.id === categorieId)?.nom ?? 'Sans catégorie'
-    }
-
-    const depensesParCategorie = new Map<string, number>()
-    for (const transaction of transactionsDuMois) {
-        if (transaction.type !== 'Depense') continue
-        const key = transaction.categorieId ?? 'sans-categorie'
-        depensesParCategorie.set(key, (depensesParCategorie.get(key) ?? 0) + Math.abs(Number(transaction.montant)))
-    }
-
-    const categoriesSpend: CategorySpend[] = Array.from(depensesParCategorie.entries())
-        .sort((a, b) => b[1] - a[1])
-        .map(([categorieId, value], index) => ({
-            id: categorieId,
-            label: categorieId === 'sans-categorie' ? 'Sans catégorie' : categorieNom(categorieId),
-            value,
-            percent: depensesCeMois > 0 ? (value / depensesCeMois) * 100 : 0,
-            ...CATEGORY_COLORS[index % CATEGORY_COLORS.length],
-        }))
-
-    const recentTransactions: RecentTransaction[] = [...transactionsDuMois]
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-        .slice(0, 5)
-        .map((transaction) => {
-            const isRevenu = transaction.type === 'Revenu'
-
-            return {
-                id: transaction.id,
-                date: new Date(transaction.date).toLocaleDateString('fr-FR', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
-                }),
-                description: transaction.description || categorieNom(transaction.categorieId),
-                categorie: categorieNom(transaction.categorieId),
-                compte: getComptesNoms(transaction.repartitions, accounts ?? []),
-                montant: signedMontant(transaction),
-                icon: isRevenu ? TrendingUp : TrendingDown,
-                iconBgClassName: isRevenu ? 'bg-emerald-50 dark:bg-emerald-950' : 'bg-red-50 dark:bg-red-950',
-                iconColorClassName: isRevenu ? 'text-emerald-600' : 'text-red-600',
-                dotClassName: isRevenu ? 'bg-emerald-600' : 'bg-red-600',
-            }
-        })
 
     return {
         utilisateur,
-        isLoading,
+        isLoading: [monthly, trend, accountsBudget, categoriesBudget, recent].some((query) => query.isLoading),
         hasAccounts: (accounts ?? []).length > 0,
         accounts: accounts ?? [],
         allCategories: categories ?? [],
         accountShares,
         monthlyFlow,
         categories: categoriesSpend,
-        revenusCeMois,
-        depensesCeMois,
+        revenusCeMois: monthly.data?.totalRevenus ?? 0,
+        depensesCeMois: monthly.data?.totalDepenses ?? 0,
         transactions: recentTransactions,
     }
 }

@@ -3,7 +3,7 @@ export { TransactionsComponent } from './components/Transactions.component'
 export { TransactionFormDialogComponent } from './components/TransactionFormDialog.component'
 
 // Hooks
-export { useTransactionsQuery } from './hooks/use-transactions-query.hook'
+export { useTransactionsQuery, TRANSACTIONS_QUERY_KEY } from './hooks/use-transactions-query.hook'
 export { useAllTransactionsQuery } from './hooks/use-all-transactions-query.hook'
 export { useCreateTransactionApi } from './hooks/use-create-transaction-api.hook'
 export { useUpdateTransactionApi } from './hooks/use-update-transaction-api.hook'
