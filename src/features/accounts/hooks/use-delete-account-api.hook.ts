@@ -11,7 +11,7 @@ export const useDeleteAccountApi = () => {
         mutationFn: (id: string) => accountApi.remove(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ACCOUNTS_QUERY_KEY })
-            toast.success('Compte supprimé')
+            toast.success('Source de revenu supprimée')
         },
         onError: (error) => {
             toast.error(getErrorMessage(error))

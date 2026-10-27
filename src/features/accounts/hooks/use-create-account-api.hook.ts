@@ -12,7 +12,7 @@ export const useCreateAccountApi = () => {
         mutationFn: (dto: CreateComptePayload) => accountApi.create(dto),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ACCOUNTS_QUERY_KEY })
-            toast.success('Compte créé avec succès')
+            toast.success('Source de revenu créée avec succès')
         },
         onError: (error) => {
             toast.error(getErrorMessage(error))

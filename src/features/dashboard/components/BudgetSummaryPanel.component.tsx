@@ -49,8 +49,8 @@ export const BudgetSummaryPanelComponent = ({
         ? {
               tone: 'bg-blue-600',
               title: 'Commencez ici',
-              text: 'Créez votre premier compte pour suivre votre budget.',
-              action: { to: '/accounts', label: 'Créer un compte' },
+              text: 'Créez votre première source de revenu pour suivre votre budget.',
+              action: { to: '/accounts', label: 'Créer une source de revenu' },
           }
         : solde < 0
           ? {
@@ -128,7 +128,7 @@ export const BudgetSummaryPanelComponent = ({
                             tab === 'comptes' ? 'bg-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
                         )}
                     >
-                        Comptes
+                        Sources
                     </button>
                     <button
                         type="button"
@@ -146,7 +146,7 @@ export const BudgetSummaryPanelComponent = ({
 
                 {tab === 'comptes' ? (
                     <ul className="space-y-3">
-                        {accounts.length === 0 && <p className="text-sm text-muted-foreground">Aucun compte</p>}
+                        {accounts.length === 0 && <p className="text-sm text-muted-foreground">Aucune source</p>}
                         {accounts.map((account) => (
                             <li key={account.id} className="flex items-center gap-3">
                                 <span

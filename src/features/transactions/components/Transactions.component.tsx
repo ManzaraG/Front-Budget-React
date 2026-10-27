@@ -80,7 +80,7 @@ export const TransactionsComponent = () => {
                         <Button
                             onClick={openCreateDialog}
                             disabled={!accounts || accounts.length === 0}
-                            title={!accounts || accounts.length === 0 ? 'Créez un compte avant d’ajouter une transaction' : undefined}
+                            title={!accounts || accounts.length === 0 ? 'Créez une source de revenu avant d’ajouter une transaction' : undefined}
                             className="rounded-lg bg-blue-600 hover:bg-blue-700"
                         >
                             <Plus className="size-4" />

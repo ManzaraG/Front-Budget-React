@@ -35,13 +35,13 @@ export const AccountFormDialogComponent = ({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>{account ? 'Modifier le compte' : 'Ajouter un compte'}</DialogTitle>
+                    <DialogTitle>{account ? 'Modifier la source de revenu' : 'Ajouter une source de revenu'}</DialogTitle>
                 </DialogHeader>
 
                 <form onSubmit={onSubmitAccountForm} className="space-y-4">
                     <div className="space-y-1">
-                        <Label htmlFor="nom">Nom du compte</Label>
-                        <Input id="nom" placeholder="Compte courant" autoComplete="off" {...accountForm.register('nom')} />
+                        <Label htmlFor="nom">Nom de la source</Label>
+                        <Input id="nom" placeholder="Mon employeur" autoComplete="off" {...accountForm.register('nom')} />
                         {errorsAccountForm.nom && <p className="text-xs text-destructive">{errorsAccountForm.nom.message}</p>}
                     </div>
 

@@ -84,7 +84,7 @@ export const TransactionsListComponent = ({
         },
         {
             id: 'compte',
-            header: 'Compte',
+            header: 'Source',
             meta: { className: 'w-36' },
             cell: ({ row }) => (
                 <span className="truncate text-muted-foreground">{getComptesNoms(row.original.repartitions, accounts)}</span>

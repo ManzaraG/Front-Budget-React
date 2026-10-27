@@ -12,7 +12,7 @@ export const useUpdateAccountApi = () => {
         mutationFn: ({ id, dto }: { id: string; dto: UpdateComptePayload }) => accountApi.update(id, dto),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ACCOUNTS_QUERY_KEY })
-            toast.success('Compte mis à jour avec succès')
+            toast.success('Source de revenu mise à jour avec succès')
         },
         onError: (error) => {
             toast.error(getErrorMessage(error))

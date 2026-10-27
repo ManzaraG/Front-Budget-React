@@ -83,7 +83,7 @@ export const DashboardHeaderComponent = ({
                 <Button
                     onClick={onAddTransaction}
                     disabled={!canAddTransaction}
-                    title={!canAddTransaction ? 'Créez un compte avant d’ajouter une transaction' : undefined}
+                    title={!canAddTransaction ? 'Créez une source de revenu avant d’ajouter une transaction' : undefined}
                     className="rounded-lg bg-blue-600 hover:bg-blue-700"
                 >
                     <Plus className="size-4" />

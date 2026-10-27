@@ -37,7 +37,7 @@ export const TransactionsTableComponent = ({ transactions }: TransactionsTablePr
                             <th scope="col" className="px-6 py-2 font-medium">Date</th>
                             <th scope="col" className="px-6 py-2 font-medium">Description</th>
                             <th scope="col" className="px-6 py-2 font-medium">Catégorie</th>
-                            <th scope="col" className="px-6 py-2 font-medium">Compte</th>
+                            <th scope="col" className="px-6 py-2 font-medium">Source</th>
                             <th scope="col" className="px-6 py-2 text-right font-medium">Montant</th>
                         </tr>
                     </thead>

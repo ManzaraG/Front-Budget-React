@@ -14,7 +14,7 @@ export const AccountSummaryCardsComponent = ({ accounts }: AccountSummaryCardsPr
         return (
             <Card>
                 <CardContent className="flex flex-col items-center gap-3 py-10 text-center">
-                    <p className="text-sm text-muted-foreground">Aucun compte pour le moment</p>
+                    <p className="text-sm text-muted-foreground">Aucune source de revenu pour le moment</p>
                     <Link to="/accounts" className="text-sm font-medium text-blue-600 hover:underline">
                         Créer votre premier compte
                     </Link>

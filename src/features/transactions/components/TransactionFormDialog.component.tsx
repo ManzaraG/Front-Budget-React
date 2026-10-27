@@ -78,7 +78,7 @@ export const TransactionFormDialogComponent = ({
 
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                            <Label>Répartition par compte</Label>
+                            <Label>Répartition par source</Label>
                             <span className="text-xs text-muted-foreground">Total : {formatCurrency(totalMontant)}</span>
                         </div>
 
@@ -101,7 +101,7 @@ export const TransactionFormDialogComponent = ({
                                             }
                                         >
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Sélectionner un compte" />
+                                                <SelectValue placeholder="Sélectionner une source" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {availableAccounts.map((account) => (

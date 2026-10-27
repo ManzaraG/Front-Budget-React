@@ -10,7 +10,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
     { icon: Home, label: 'Tableau de bord', to: '/' },
-    { icon: Wallet, label: 'Comptes', to: '/accounts' },
+    { icon: Wallet, label: 'Sources de revenu', to: '/accounts' },
     { icon: ArrowRightLeft, label: 'Transactions', to: '/transactions' },
     { icon: Tags, label: 'Catégories', to: '/categories' },
     { icon: Settings, label: 'Paramètres' },
